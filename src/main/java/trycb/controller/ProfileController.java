@@ -68,7 +68,7 @@ public class ProfileController {
   @DeleteMapping("/profile/{id}")
   public ResponseEntity<Void> deleteProfile(@PathVariable UUID id) {
     try {
-    profileRepository.deleteById(id);
+      profileRepository.deleteById(id);
       return ResponseEntity.noContent().build();
     } catch (DataRetrievalFailureException e) {
       LOGGER.error("Document not found", e);
