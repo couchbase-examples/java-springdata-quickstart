@@ -3,8 +3,6 @@ package trycb.controller;
 import java.util.List;
 import java.util.UUID;
 
-import com.couchbase.client.core.error.DocumentNotFoundException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +28,22 @@ public class ProfileController {
   private ProfileRepository profileRepository;
 
   @GetMapping("/profile")
-  public ResponseEntity<List<Profile>> listProfiles(@RequestParam(required = false) String query, @RequestParam(defaultValue = "10") int pageSize, @RequestParam(defaultValue = "0") int page) {
+  public ResponseEntity<List<Profile>> listProfiles(
+      @RequestParam(required = false) String query,
+      @RequestParam(defaultValue = "10") int pageSize,
+      @RequestParam(defaultValue = "0") int page
+  ) {
     if (pageSize < 1 || pageSize > 10) pageSize = 10;
     PageRequest pageRequest = PageRequest.of(page, pageSize);
     List<Profile> result;
-    if (query != null && query.length() > 0) {
-      result = profileRepository.findByQuery(query, pageRequest).toList();
-    } else {
+
+    if (query == null || query.length() != 0) {
       result = profileRepository.findAll(pageRequest).toList();
+    } else {
+      // This is just a LIKE query.
+      // For full-text search documentation refer to: 
+      // https://docs.couchbase.com/java-sdk/current/howtos/full-text-searching-with-sdk.html
+      result = profileRepository.findByText(query, pageRequest).toList();
     }
 
     if (result != null && result.size() > 0) {
@@ -61,6 +67,7 @@ public class ProfileController {
 
   @PostMapping("/profile")
   public ResponseEntity<Profile> saveProfile(@RequestBody Profile profile) {
+    // the same endpoint can be used to create and save the object
     profile = profileRepository.save(profile);
     return ResponseEntity.status(HttpStatus.CREATED).body(profile);
   }
@@ -74,10 +81,5 @@ public class ProfileController {
       LOGGER.error("Document not found", e);
       return ResponseEntity.notFound().build();
     }
-  }
-
-  @GetMapping("/test/**")
-  public ResponseEntity<String> test() {
-    return ResponseEntity.ok("test");
   }
 }

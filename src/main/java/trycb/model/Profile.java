@@ -3,9 +3,15 @@ package trycb.model;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.couchbase.repository.Collection;
+import org.springframework.data.couchbase.repository.Scope;
 
+@Scope("_default")
+@Collection("profile")
 public class Profile {
-  private @Id UUID id;
+  @Id
+  @GeneratedValue
+  private UUID id;
   private String firstName, lastName;
   private byte age;
   private String address;
