@@ -63,5 +63,18 @@ public final class DbSetupRunner implements CommandLineRunner {
     } catch (Exception e) {
       LOGGER.error("Failed to create primary index on collection {}", CouchbaseConfiguration.PROFILE_COLLECTION, e);
     }
+
+    try {
+      // secondary index for querying profiles by fields
+      final String query = "CREATE INDEX secondary_profile_index ON " + config.getBucketName() + "._default." + CouchbaseConfiguration.PROFILE_COLLECTION + "(firstName, lastName, address)";
+      LOGGER.info("Creating secondary_profile_index: {}", query);
+      cluster.query(query);
+      Thread.sleep(1000);
+      LOGGER.info("Created secondary index on collection {}", CouchbaseConfiguration.PROFILE_COLLECTION);
+    } catch (IndexExistsException e) {
+      LOGGER.info("Secondary index exists on collection {}", CouchbaseConfiguration.PROFILE_COLLECTION);
+    } catch (Exception e) {
+      LOGGER.error("Failed to create secondary index on collection {}", CouchbaseConfiguration.PROFILE_COLLECTION, e);
+    }
   }
 }

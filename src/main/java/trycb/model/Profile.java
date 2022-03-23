@@ -3,6 +3,7 @@ package trycb.model;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.couchbase.core.mapping.id.GeneratedValue;
 import org.springframework.data.couchbase.repository.Collection;
 import org.springframework.data.couchbase.repository.Scope;
 
