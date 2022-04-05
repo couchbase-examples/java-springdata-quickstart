@@ -10,18 +10,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
 
-/**
- * @author      : chedim (chedim@couchbaser)
- * @file        : CouchbaseConfiguration
- * @created     : Wednesday Mar 16, 2022 20:36:15 EDT
- */
-
 @Configuration
 public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
   public static final String PROFILE_COLLECTION = "profile";
 
   @Override
   public String getConnectionString() {
+    // To connect to capella:
+    // return "couchbases://cb.jnym5s9gv4ealbe.cloud.couchbase.com?tls=no_verify"
+    // (replace cb.jnym5s9gv4ealbe.cloud.couchbase.com with your Capella cluster address)
     return "couchbase://127.0.0.1";
   }
 
