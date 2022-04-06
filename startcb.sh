@@ -7,6 +7,8 @@ CB_PSWD="${CB_PSWD:-password}"
 CB_HOST="${CB_HOST:-127.0.0.1}"
 CB_PORT="${CB_PORT:-8091}"
 CB_NAME="${CB_NAME:-cbgitpod}"
+CB_BCKT="${CB_BCKT:-springdata_quickstart}"
+CB_COLL="${CB_COLL:-_default.profile}"
 
 CB_SERVICES="${CB_SERVICES:-data,query,index,fts,eventing,analytics}"
 
@@ -48,4 +50,10 @@ fi
 
 sleep 3
 
+couchbase-cli bucket-create -c "${CB_HOST}:${CB_PORT}" -u "${CB_USER}" -p "${CB_PSWD}" --bucket "${CB_BCKT}" --bucket-type couchbase --bucket-ramsize 1024
 
+sleep 3
+
+couchbase-cli collection-manage -c "${CB_HOST}:${CB_PORT}" -u "${CB_USER}" -p "${CB_PSWD}" --bucket "${CB_BCKT}" --create-collection "${CB_COLL}"
+
+sleep 3
