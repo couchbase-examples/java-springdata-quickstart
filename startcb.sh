@@ -12,7 +12,7 @@ CB_COLL="${CB_COLL:-_default.profile}"
 
 CB_SERVICES="${CB_SERVICES:-data,query,index,fts,eventing,analytics}"
 
-CB_KV_RAMSIZE="${CB_KV_RAMSIZE:-256}"
+CB_KV_RAMSIZE="${CB_KV_RAMSIZE:-1024}"
 CB_INDEX_RAMSIZE="${CB_INDEX_RAMSIZE:-256}"
 CB_FTS_RAMSIZE="${CB_FTS_RAMSIZE:-256}"
 CB_EVENTING_RAMSIZE="${CB_EVENTING_RAMSIZE:-512}"
@@ -50,7 +50,7 @@ fi
 
 sleep 3
 
-couchbase-cli bucket-create -c "${CB_HOST}:${CB_PORT}" -u "${CB_USER}" -p "${CB_PSWD}" --bucket "${CB_BCKT}" --bucket-type couchbase --bucket-ramsize 1024
+couchbase-cli bucket-create -c "${CB_HOST}:${CB_PORT}" -u "${CB_USER}" -p "${CB_PSWD}" --bucket "${CB_BCKT}" --bucket-type couchbase --bucket-ramsize "$CB_KV_RAMSIZE"
 
 sleep 3
 
