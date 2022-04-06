@@ -14,7 +14,7 @@ public class Profile {
   @GeneratedValue
   private UUID id;
   private String firstName, lastName;
-  private byte age;
+  private Byte age;
   private String address;
 
   public void setId(UUID id) {
