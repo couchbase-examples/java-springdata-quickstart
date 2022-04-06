@@ -43,7 +43,7 @@ public class ProfileController {
       // This is just a LIKE query.
       // For full-text search documentation refer to: 
       // https://docs.couchbase.com/java-sdk/current/howtos/full-text-searching-with-sdk.html
-      result = profileRepository.findByText(query, pageRequest, page, pageSize).toList();
+      result = profileRepository.findByText(query, page, pageSize);
     }
 
     if (result != null && result.size() > 0) {
