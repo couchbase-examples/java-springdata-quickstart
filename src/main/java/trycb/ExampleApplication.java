@@ -5,6 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
+/**
+ * This example application demonstrates using
+ * Spring Data with Couchbase. 
+ **/
 @SpringBootApplication
 public class ExampleApplication {
 

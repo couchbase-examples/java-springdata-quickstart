@@ -13,6 +13,7 @@ import trycb.model.Profile;
 
 @Repository
 public interface ProfileRepository extends PagingAndSortingRepository<Profile, UUID> {
+  // Repository method that executes a custom SQL++ query 
   @Query("#{#n1ql.selectEntity} WHERE firstName LIKE '%' || $1 || '%' OR lastName LIKE '%' || $1 || '%' OR address LIKE '%' || $1 || '%' OFFSET $2 * $3 LIMIT $3")
   List<Profile> findByText(String query, int pageNum, int pageSize);
 

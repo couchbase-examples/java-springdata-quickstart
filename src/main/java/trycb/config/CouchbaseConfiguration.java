@@ -10,12 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
 
-/**
- * @author      : chedim (chedim@couchbaser)
- * @file        : CouchbaseConfiguration
- * @created     : Wednesday Mar 16, 2022 20:36:15 EDT
- */
-
 @Configuration
 public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
   public static final String PROFILE_COLLECTION = "profile";
@@ -44,6 +38,7 @@ public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
   public Bucket getCouchbaseBucket(Cluster cluster) throws Exception {
     // verify that bucket exists
     if (!cluster.buckets().getAllBuckets().containsKey(getBucketName())) {
+      // create the bucket if it doesn't
       cluster.buckets().createBucket(
         BucketSettings.create(getBucketName())
           .bucketType(BucketType.COUCHBASE)

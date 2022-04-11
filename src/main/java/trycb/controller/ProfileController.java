@@ -37,6 +37,7 @@ public class ProfileController {
     List<Profile> result;
 
     if (query == null || query.length() != 0) {
+      // Couchbase repoitories support request pagination via PageRequest
       PageRequest pageRequest = PageRequest.of(page, pageSize);
       result = profileRepository.findAll(pageRequest).toList();
     } else {
