@@ -1,9 +1,4 @@
 package trycb.controller;
-/**
- * @author      : chedim (chedim@couchbaser)
- * @file        : IndexController
- * @created     : Friday Mar 18, 2022 09:54:39 EDT
- */
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class IndexController {
   @GetMapping("/")
   public ResponseEntity<Void> index() {
+    // Redirecting to swagger-ui home page
     HttpHeaders headers = new HttpHeaders();
     headers.add("Location", "/swagger-ui/index.html");
     return new ResponseEntity<Void>(headers, HttpStatus.FOUND);

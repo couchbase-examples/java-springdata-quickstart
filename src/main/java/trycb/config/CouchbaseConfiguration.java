@@ -45,6 +45,7 @@ public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
   public Bucket getCouchbaseBucket(Cluster cluster) throws Exception {
     // verify that bucket exists
     if (!cluster.buckets().getAllBuckets().containsKey(getBucketName())) {
+      // create the bucket if it doesn't
       cluster.buckets().createBucket(
         BucketSettings.create(getBucketName())
           .bucketType(BucketType.COUCHBASE)

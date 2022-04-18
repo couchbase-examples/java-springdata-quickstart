@@ -27,6 +27,7 @@ github:
 vscode:
   extensions:
     - redhat.java
+    - vscjava
     - vscjava.vscode-java-debug
     - vscjava.vscode-java-test
     - pivotal.vscode-spring-boot
