@@ -17,8 +17,12 @@ public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
   @Override
   public String getConnectionString() {
     // To connect to capella:
+    // - with ssl certificate validation:
+    // return "couchbases://cb.jnym5s9gv4ealbe.cloud.couchbase.com"
+    // - without ssl validation:
     // return "couchbases://cb.jnym5s9gv4ealbe.cloud.couchbase.com?tls=no_verify"
     // (replace cb.jnym5s9gv4ealbe.cloud.couchbase.com with your Capella cluster address)
+    //
     return "couchbase://127.0.0.1";
   }
 
