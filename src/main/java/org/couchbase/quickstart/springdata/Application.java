@@ -1,4 +1,4 @@
-package trycb;
+package org.couchbase.quickstart.springdata;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,10 +10,10 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
  * Spring Data with Couchbase. 
  **/
 @SpringBootApplication
-public class ExampleApplication {
+public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ExampleApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
   @Bean

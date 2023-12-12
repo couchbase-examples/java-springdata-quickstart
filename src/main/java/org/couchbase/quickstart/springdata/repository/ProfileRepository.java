@@ -1,15 +1,15 @@
-package trycb.repository;
+package org.couchbase.quickstart.springdata.repository;
 
 import java.util.List;
 import java.util.UUID;
 
+import org.couchbase.quickstart.springdata.model.Profile;
 import org.springframework.data.couchbase.repository.Query;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
-import trycb.model.Profile;
 
 @Repository
 public interface ProfileRepository extends PagingAndSortingRepository<Profile, UUID> {

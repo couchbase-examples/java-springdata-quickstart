@@ -1,4 +1,4 @@
-package trycb.controller;
+package org.couchbase.quickstart.springdata.controller;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

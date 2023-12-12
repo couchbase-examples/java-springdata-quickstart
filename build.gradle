@@ -4,7 +4,7 @@ plugins {
 	id 'java'
 }
 
-group = 'trycb'
+group = 'org.couchbase.quickstart.springdata'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
@@ -12,11 +12,30 @@ repositories {
 	mavenCentral()
 }
 
+// ext {
+//     swaggerVersion = "3.0.0"
+//     springWebVersion = "5.3.9"
+// }
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-couchbase'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.data:spring-data-couchbase'
+	
+	// lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 
-  implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+	// swagger
+	implementation 'io.swagger.core.v3:swagger-annotations'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+
+	// implementation "io.springfox:springfox-boot-starter:${swaggerVersion}"
+    // implementation "io.springfox:springfox-spring-web:${springWebVersion}"
+    // implementation "io.springfox:springfox-swagger2:${swaggerVersion}"
+    // implementation "io.springfox:springfox-swagger-ui:${swaggerVersion}"
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
