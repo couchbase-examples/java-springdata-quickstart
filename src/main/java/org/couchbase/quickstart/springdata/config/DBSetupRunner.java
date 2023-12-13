@@ -26,25 +26,25 @@ public class DBSetupRunner implements CommandLineRunner {
 
   @Override
   public void run(String... strings) throws Exception {
-    Optional<Airline> airline = airlineRepository.findById("airline_10"); // SFO
+    Optional<Airline> airline = airlineRepository.findById("airline_10");
     if (airline.isPresent()) {
-      System.out.println("got SFO: " + airline.get());
+      System.out.println("got airline_10: " + airline.get());
     } else {
-      System.out.println("SFO not found");
+      System.out.println("airline_10 not found");
     }
 
-    Optional<Airport> airport = airportRepository.findById("airport_1254"); // SFO
+    Optional<Airport> airport = airportRepository.findById("airport_1254");
     if (airport.isPresent()) {
-      System.out.println("got SFO: " + airport.get());
+      System.out.println("got airport_1254: " + airport.get());
     } else {
-      System.out.println("SFO not found");
+      System.out.println("airport_1254 not found");
     }
 
-    Optional<Route> route = routeRepository.findById("route_10000"); // SFO
+    Optional<Route> route = routeRepository.findById("route_10000");
     if (route.isPresent()) {
-      System.out.println("got SFO: " + route.get());
+      System.out.println("got route_10000: " + route.get());
     } else {
-      System.out.println("SFO not found");
+      System.out.println("route_10000 not found");
     }
     try {
     } catch (Exception e) {

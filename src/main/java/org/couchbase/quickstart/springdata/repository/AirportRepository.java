@@ -22,4 +22,10 @@ public interface AirportRepository extends CouchbaseRepository<Airport, String>,
     @Query("SELECT META().id AS _ID, type, airportname, city, country, faa, icao, tz, geo AS geo FROM #{#n1ql.bucket} WHERE type = 'airport'")
     Page<Airport> findAll(Pageable pageable);
 
+    @Query("SELECT DISTINCT META(airport).id AS __id,airport.* " +
+            "FROM airport as airport " +
+            "JOIN route as route ON airport.faa = route.sourceairport " +
+            "WHERE airport.faa = $1 AND route.stops = 0")
+    Page<Airport> getDirectConnections(String targetAirportCode, Pageable pageable);
+
 }
