@@ -46,8 +46,8 @@ public class AirlineService {
         return airlineRepository.findByCountry(country,pageable);
     }
 
-    public Page<Airline> findByDestinationAirport(Pageable pageable,String destinationAirport) {
-        return airlineRepository.findByDestinationAirport(pageable,destinationAirport);
+    public Page<Airline> findByDestinationAirport(String destinationAirport, Pageable pageable) {
+        return airlineRepository.findByDestinationAirport(destinationAirport, pageable);
     }
 
 }

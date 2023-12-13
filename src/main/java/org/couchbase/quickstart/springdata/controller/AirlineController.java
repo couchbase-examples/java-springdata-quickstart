@@ -63,18 +63,23 @@ public class AirlineController {
     }
 
     @GetMapping("/country/{country}")
-    public ResponseEntity<Page<Airline>> listAirlinesByCountry(@PathVariable String country, @RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<Airline>> listAirlinesByCountry(
+            @PathVariable String country,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<Airline> airlines = airlineService.findByCountry(country,PageRequest.of(page, size));
+        Page<Airline> airlines = airlineService.findByCountry(country, PageRequest.of(page, size));
         return new ResponseEntity<>(airlines, HttpStatus.OK);
     }
 
     @GetMapping("/destination/{destinationAirport}")
-    public ResponseEntity<Page<Airline>> listAirlinesByDestinationAirport(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size, @PathVariable String destinationAirport) {
-        Page<Airline> airlines = airlineService.findByDestinationAirport(PageRequest.of(page, size),
-                destinationAirport);
+    public ResponseEntity<Page<Airline>> listAirlinesByDestinationAirport(
+            @PathVariable String destinationAirport,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<Airline> airlines = airlineService.findByDestinationAirport(destinationAirport,
+                PageRequest.of(page, size));
+
         return new ResponseEntity<>(airlines, HttpStatus.OK);
     }
-
 }
