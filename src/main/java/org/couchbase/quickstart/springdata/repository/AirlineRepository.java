@@ -8,14 +8,12 @@ import org.springframework.data.couchbase.repository.ScanConsistency;
 import org.springframework.data.couchbase.repository.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
 
 import com.couchbase.client.java.query.QueryScanConsistency;
 
 @Scope("inventory")
 @Collection("airline")
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
-@Repository("airlineRepository")
 public interface AirlineRepository extends CouchbaseRepository<Airline, String> {
 
     @Query("#{#n1ql.selectEntity}")
