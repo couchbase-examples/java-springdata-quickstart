@@ -2,16 +2,14 @@ package org.couchbase.quickstart.springdata.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import org.couchbase.quickstart.springdata.models.Airline;
+import org.couchbase.quickstart.springdata.models.RestResponsePage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -95,13 +93,13 @@ class AirlineIntegrationTest {
 
     @Test
     void testListAirlines() {
-        ResponseEntity<Page<Airline>> response = restTemplate.exchange(
+        ResponseEntity<RestResponsePage<Airline>> response = restTemplate.exchange(
                 "http://localhost:" + port + "/api/v1/airline/list", HttpMethod.GET, null,
-                new ParameterizedTypeReference<Page<Airline>>() {
+                new ParameterizedTypeReference<RestResponsePage<Airline>>() {
                 });
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        Page<Airline> airlines = response.getBody();
+        RestResponsePage<Airline> airlines = response.getBody();
         assertThat(airlines).isNotNull();
         assertThat(airlines.getSize()).isEqualTo(10);
 
@@ -113,16 +111,16 @@ class AirlineIntegrationTest {
         // airline_10226{"id":10226,"type":"airline","name":"Atifly","iata":"A1","icao":"A1F","callsign":"atifly","country":"United
         // States"}
         String country = "United States";
-        ResponseEntity<Page<Airline>> response = restTemplate.exchange(
+        ResponseEntity<RestResponsePage<Airline>> response = restTemplate.exchange(
                 "http://localhost:" + port + "/api/v1/airline/country/" + country,
-                HttpMethod.GET, null, new ParameterizedTypeReference<Page<Airline>>() {
+                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
                 });
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        Page<Airline> airlines = response.getBody();
-        Airline airline = airlines.stream().filter(a -> a.getId().equals("10226")).findFirst().orElse(null);
+        RestResponsePage<Airline> airlines = response.getBody();
+        Airline airline = airlines.stream().filter(a -> a.getId().equals("airline_10226")).findFirst().orElse(null);
         assertThat(airline).isNotNull();
-        assertThat(airline.getId()).isEqualTo("10226");
+        assertThat(airline.getId()).isEqualTo("airline_10226");
         assertThat(airline.getType()).isEqualTo("airline");
         assertThat(airline.getName()).isEqualTo("Atifly");
         assertThat(airline.getIata()).isEqualTo("A1");
@@ -134,16 +132,16 @@ class AirlineIntegrationTest {
         // Austral","iata":"UU","icao":"REU","callsign":"REUNION","country":"France"}
 
         country = "France";
-        ResponseEntity<Page<Airline>> response2 = restTemplate.exchange(
+        ResponseEntity<RestResponsePage<Airline>> response2 = restTemplate.exchange(
                 "http://localhost:" + port + "/api/v1/airline/country/" + country,
-                HttpMethod.GET, null, new ParameterizedTypeReference<Page<Airline>>() {
+                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
                 });
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
         
-        Page<Airline> airlines2 = response2.getBody();
-        Airline airline2 = airlines2.stream().filter(a -> a.getId().equals("1191")).findFirst().orElse(null);
+        RestResponsePage<Airline> airlines2 = response2.getBody();
+        Airline airline2 = airlines2.stream().filter(a -> a.getId().equals("airline_1191")).findFirst().orElse(null);
         assertThat(airline2).isNotNull();
-        assertThat(airline2.getId()).isEqualTo("1191");
+        assertThat(airline2.getId()).isEqualTo("airline_1191");
         assertThat(airline2.getType()).isEqualTo("airline");
         assertThat(airline2.getName()).isEqualTo("Air Austral");
         assertThat(airline2.getIata()).isEqualTo("UU");

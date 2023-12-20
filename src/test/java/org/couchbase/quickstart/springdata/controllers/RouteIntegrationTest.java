@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.couchbase.quickstart.springdata.models.RestResponsePage;
 import org.couchbase.quickstart.springdata.models.Route;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,13 +117,13 @@ class RouteIntegrationTest {
 
     @Test
     void testListRoutes() {
-        ResponseEntity<List<Route>> response = restTemplate.exchange("http://localhost:" + port + "/api/v1/route/list",
-                HttpMethod.GET, null, new ParameterizedTypeReference<List<Route>>() {
+        ResponseEntity<RestResponsePage<Route>> response = restTemplate.exchange("http://localhost:" + port + "/api/v1/route/list",
+                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Route>>() {
                 });
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        List<Route> routes = response.getBody();
+        RestResponsePage<Route> routes = response.getBody();
         assertThat(routes).isNotNull();
-        assertThat(routes.size()).isGreaterThan(100);
+        assertThat(routes.getTotalElements()).isGreaterThan(100);
     }
 }

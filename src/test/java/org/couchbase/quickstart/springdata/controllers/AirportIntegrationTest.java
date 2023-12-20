@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.couchbase.quickstart.springdata.models.Airport;
+import org.couchbase.quickstart.springdata.models.RestResponsePage;
 import org.couchbase.quickstart.springdata.models.Airport.Geo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,12 +99,12 @@ import org.springframework.http.ResponseEntity;
 
     @Test
      void testListAirports() throws Exception {
-        ResponseEntity<List<Airport>> response = restTemplate.exchange("http://localhost:" + port + "/api/v1/airport/list", HttpMethod.GET, null, new ParameterizedTypeReference<List<Airport>>() {});
+        ResponseEntity<RestResponsePage<Airport>> response = restTemplate.exchange("http://localhost:" + port + "/api/v1/airport/list", HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airport>>() {});
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        List<Airport> airports = response.getBody();
+        RestResponsePage<Airport> airports = response.getBody();
         assertThat(airports).isNotNull();
-        assertThat(airports.size()).isGreaterThan(100);
+        assertThat(airports.getTotalElements()).isGreaterThan(100);
     }
 
     // @Test
