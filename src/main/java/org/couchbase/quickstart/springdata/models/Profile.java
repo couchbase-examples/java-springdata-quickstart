@@ -1,4 +1,4 @@
-package org.couchbase.quickstart.springdata.model;
+package org.couchbase.quickstart.springdata.models;
 
 import java.util.UUID;
 

@@ -2,7 +2,9 @@ package org.couchbase.quickstart.springdata.controller;
 
 import java.util.Optional;
 
-import org.couchbase.quickstart.springdata.model.Airline;
+import javax.validation.Valid;
+
+import org.couchbase.quickstart.springdata.models.Airline;
 import org.couchbase.quickstart.springdata.services.AirlineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,7 +33,7 @@ public class AirlineController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Airline> createAirline(@PathVariable String id, @RequestBody Airline airline) {
+    public ResponseEntity<Airline> createAirline(@PathVariable String id, @Valid @RequestBody Airline airline) {
         Airline createdAirline = airlineService.createAirline(id, airline);
         return new ResponseEntity<>(createdAirline, HttpStatus.CREATED);
     }
@@ -44,7 +46,7 @@ public class AirlineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Airline> updateAirline(@PathVariable String id, @RequestBody Airline airline) {
+    public ResponseEntity<Airline> updateAirline(@PathVariable String id, @Valid @RequestBody Airline airline) {
         Airline updatedAirline = airlineService.updateAirline(id, airline);
         return new ResponseEntity<>(updatedAirline, HttpStatus.OK);
     }

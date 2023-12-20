@@ -2,9 +2,9 @@ package org.couchbase.quickstart.springdata.config;
 
 import java.util.Optional;
 
-import org.couchbase.quickstart.springdata.model.Airline;
-import org.couchbase.quickstart.springdata.model.Airport;
-import org.couchbase.quickstart.springdata.model.Route;
+import org.couchbase.quickstart.springdata.models.Airline;
+import org.couchbase.quickstart.springdata.models.Airport;
+import org.couchbase.quickstart.springdata.models.Route;
 import org.couchbase.quickstart.springdata.repository.AirlineRepository;
 import org.couchbase.quickstart.springdata.repository.AirportRepository;
 import org.couchbase.quickstart.springdata.repository.RouteRepository;

@@ -3,7 +3,7 @@ package org.couchbase.quickstart.springdata.repository;
 import java.util.List;
 import java.util.UUID;
 
-import org.couchbase.quickstart.springdata.model.Profile;
+import org.couchbase.quickstart.springdata.models.Profile;
 import org.springframework.data.couchbase.repository.Query;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -2,7 +2,7 @@ package org.couchbase.quickstart.springdata.services;
 
 import java.util.Optional;
 
-import org.couchbase.quickstart.springdata.model.Route;
+import org.couchbase.quickstart.springdata.models.Route;
 import org.couchbase.quickstart.springdata.repository.RouteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

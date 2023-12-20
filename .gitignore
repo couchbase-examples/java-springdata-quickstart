@@ -1,11 +1,12 @@
 .gradle
 build/
+out/
 .vscode/
 
 # Default ignored files
 shelf/
-/workspace.xml
 .idea/
+/workspace.xml
 .idea_modules/
 sonarlint/
 

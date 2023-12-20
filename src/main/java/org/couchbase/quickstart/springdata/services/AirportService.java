@@ -2,7 +2,7 @@ package org.couchbase.quickstart.springdata.services;
 
 import java.util.Optional;
 
-import org.couchbase.quickstart.springdata.model.Airport;
+import org.couchbase.quickstart.springdata.models.Airport;
 import org.couchbase.quickstart.springdata.repository.AirportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

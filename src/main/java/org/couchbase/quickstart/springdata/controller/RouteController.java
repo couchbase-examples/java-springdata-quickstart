@@ -2,7 +2,9 @@ package org.couchbase.quickstart.springdata.controller;
 
 import java.util.Optional;
 
-import org.couchbase.quickstart.springdata.model.Route;
+import javax.validation.Valid;
+
+import org.couchbase.quickstart.springdata.models.Route;
 import org.couchbase.quickstart.springdata.services.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,7 +29,7 @@ public class RouteController {
     private RouteService routeService;
 
     @PostMapping("/{id}")
-    public ResponseEntity<Route> createRoute(@PathVariable String id, @RequestBody Route route) {
+    public ResponseEntity<Route> createRoute(@PathVariable String id, @Valid @RequestBody Route route) {
         Route createdRoute = routeService.createRoute(id, route);
         return new ResponseEntity<>(createdRoute, HttpStatus.CREATED);
     }
@@ -40,7 +42,7 @@ public class RouteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Route> updateRoute(@PathVariable String id, @RequestBody Route route) {
+    public ResponseEntity<Route> updateRoute(@PathVariable String id, @Valid @RequestBody Route route) {
         Route updatedRoute = routeService.updateRoute(id, route);
         return new ResponseEntity<>(updatedRoute, HttpStatus.OK);
     }

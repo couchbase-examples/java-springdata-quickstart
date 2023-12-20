@@ -2,7 +2,9 @@ package org.couchbase.quickstart.springdata.controller;
 
 import java.util.Optional;
 
-import org.couchbase.quickstart.springdata.model.Airport;
+import javax.validation.Valid;
+
+import org.couchbase.quickstart.springdata.models.Airport;
 import org.couchbase.quickstart.springdata.services.AirportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,7 +29,7 @@ public class AirportController {
     private AirportService airportService;
 
     @PostMapping("/{id}")
-    public ResponseEntity<Airport> createAirport(@PathVariable String id, @RequestBody Airport airport) {
+    public ResponseEntity<Airport> createAirport(@PathVariable String id, @Valid @RequestBody Airport airport) {
         Airport createdAirport = airportService.createAirport(id, airport);
         return new ResponseEntity<>(createdAirport, HttpStatus.CREATED);
     }
@@ -40,7 +42,7 @@ public class AirportController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Airport> updateAirport(@PathVariable String id, @RequestBody Airport airport) {
+    public ResponseEntity<Airport> updateAirport(@PathVariable String id, @Valid @RequestBody Airport airport) {
         Airport updatedAirport = airportService.updateAirport(id, airport);
         return new ResponseEntity<>(updatedAirport, HttpStatus.OK);
     }

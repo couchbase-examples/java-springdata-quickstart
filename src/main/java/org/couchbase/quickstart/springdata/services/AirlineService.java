@@ -3,7 +3,7 @@ package org.couchbase.quickstart.springdata.services;
 
 import java.util.Optional;
 
-import org.couchbase.quickstart.springdata.model.Airline;
+import org.couchbase.quickstart.springdata.models.Airline;
 import org.couchbase.quickstart.springdata.repository.AirlineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

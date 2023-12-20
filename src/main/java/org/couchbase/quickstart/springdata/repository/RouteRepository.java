@@ -1,6 +1,6 @@
 package org.couchbase.quickstart.springdata.repository;
 
-import org.couchbase.quickstart.springdata.model.Route;
+import org.couchbase.quickstart.springdata.models.Route;
 import org.springframework.data.couchbase.repository.Collection;
 import org.springframework.data.couchbase.repository.CouchbaseRepository;
 import org.springframework.data.couchbase.repository.DynamicProxyable;

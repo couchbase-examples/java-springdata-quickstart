@@ -1,6 +1,6 @@
 package org.couchbase.quickstart.springdata.repository;
 
-import org.couchbase.quickstart.springdata.model.Airline;
+import org.couchbase.quickstart.springdata.models.Airline;
 import org.springframework.data.couchbase.repository.Collection;
 import org.springframework.data.couchbase.repository.CouchbaseRepository;
 import org.springframework.data.couchbase.repository.Query;

@@ -3,7 +3,9 @@ package org.couchbase.quickstart.springdata.controller;
 import java.util.List;
 import java.util.UUID;
 
-import org.couchbase.quickstart.springdata.model.Profile;
+import javax.validation.Valid;
+
+import org.couchbase.quickstart.springdata.models.Profile;
 import org.couchbase.quickstart.springdata.repository.ProfileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +68,7 @@ public class ProfileController {
   }
 
   @PostMapping("/profile")
-  public ResponseEntity<Profile> saveProfile(@RequestBody Profile profile) {
+  public ResponseEntity<Profile> saveProfile(@Valid @RequestBody Profile profile) {
     // the same endpoint can be used to create and save the object
     profile = profileRepository.save(profile);
     return ResponseEntity.status(HttpStatus.CREATED).body(profile);
