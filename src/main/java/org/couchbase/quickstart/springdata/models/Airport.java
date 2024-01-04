@@ -7,19 +7,25 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Document
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
+@Builder
 public class Airport implements Serializable {
 
+    @Id
     @NotBlank(message = "Id is mandatory")
     private String id;
 
@@ -50,10 +56,11 @@ public class Airport implements Serializable {
     @Valid // To validate the embedded Geo object
     private Geo geo;
 
-    @Getter
-    @Setter
+    @Document
     @AllArgsConstructor
     @NoArgsConstructor
+    @Data
+    @Builder
     public static class Geo implements Serializable {
 
         @NotNull(message = "Altitude is mandatory")

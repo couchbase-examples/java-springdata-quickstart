@@ -4,21 +4,16 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotBlank;
 
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.Field;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 @Document
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Data
+@Builder
 public class Airline implements Serializable {
 
     @Id
@@ -48,5 +43,6 @@ public class Airline implements Serializable {
     @Field
     @NotBlank(message = "Country is mandatory")
     private String country;
+
 
 }

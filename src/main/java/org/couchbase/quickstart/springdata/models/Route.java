@@ -11,15 +11,15 @@ import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Document
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
+@Builder
 public class Route implements Serializable {
 
     @NotBlank(message = "Id is mandatory")
@@ -55,10 +55,11 @@ public class Route implements Serializable {
     @NotNull(message = "Distance is mandatory")
     private Double distance;
 
-    @Getter
-    @Setter
+    @Document
     @AllArgsConstructor
     @NoArgsConstructor
+    @Data
+    @Builder
     public static class Schedule implements Serializable {
         @NotNull(message = "Day is mandatory")
         private Integer day;

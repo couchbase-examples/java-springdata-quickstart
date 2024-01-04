@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.couchbase.quickstart.springdata.models.Route;
 import org.couchbase.quickstart.springdata.repository.RouteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,8 +11,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class RouteService {
 
-   @Autowired
    private RouteRepository routeRepository;
+
+    public RouteService(RouteRepository routeRepository) {
+         this.routeRepository = routeRepository;
+    }
 
    public Page<Route> getAllRoutes(Pageable pageable) {
        return routeRepository.findAll(pageable);
@@ -31,8 +33,7 @@ public class RouteService {
        routeRepository.deleteById(id);
    }
 
-   public Route createRoute(String id, Route route) {
-       route.setId(id);
+   public Route createRoute(Route route) {
        return routeRepository.save(route);
    }
 

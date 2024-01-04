@@ -13,8 +13,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AirlineService {
 
-    @Autowired
     private AirlineRepository airlineRepository;
+
+    public AirlineService(AirlineRepository airlineRepository) {
+        this.airlineRepository = airlineRepository;
+    }
 
     public Page<Airline> getAllAirlines(Pageable pageable) {
         return airlineRepository.findAll(pageable);
@@ -32,8 +35,7 @@ public class AirlineService {
         airlineRepository.deleteById(id);
     }
 
-    public Airline createAirline(String id, Airline airline) {
-        airline.setId(id);
+    public Airline createAirline(Airline airline) {
         return airlineRepository.save(airline);
     }
 

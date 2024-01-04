@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.couchbase.quickstart.springdata.models.Airport;
 import org.couchbase.quickstart.springdata.repository.AirportRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,8 +11,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AirportService {
 
-    @Autowired
     private AirportRepository airportRepository;
+
+    public AirportService(AirportRepository airportRepository) {
+        this.airportRepository = airportRepository;
+    }
 
     public Page<Airport> getAllAirports(Pageable pageable) {
         return airportRepository.findAll(pageable);
@@ -31,8 +33,7 @@ public class AirportService {
         airportRepository.deleteById(id);
     }
 
-    public Airport createAirport(String id, Airport airport) {
-        airport.setId(id);
+    public Airport createAirport(Airport airport) {
         return airportRepository.save(airport);
     }
 
