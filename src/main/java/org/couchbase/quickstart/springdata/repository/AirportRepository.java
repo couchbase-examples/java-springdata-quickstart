@@ -1,6 +1,7 @@
 package org.couchbase.quickstart.springdata.repository;
 
 import org.couchbase.quickstart.springdata.models.Airport;
+import org.couchbase.quickstart.springdata.models.Route;
 import org.springframework.data.couchbase.repository.Collection;
 import org.springframework.data.couchbase.repository.CouchbaseRepository;
 import org.springframework.data.couchbase.repository.Query;
@@ -21,10 +22,10 @@ public interface AirportRepository extends CouchbaseRepository<Airport, String> 
     @Query("#{#n1ql.selectEntity}")
     Page<Airport> findAll(Pageable pageable);
 
-    @Query("SELECT DISTINCT META(airport).id AS __id,airport.* " +
+    @Query("SELECT DISTINCT META(route).id as __id,route.* " +
             "FROM airport as airport " +
             "JOIN route as route ON airport.faa = route.sourceairport " +
             "WHERE airport.faa = $1 AND route.stops = 0")
-    Page<Airport> getDirectConnections(String targetAirportCode, Pageable pageable);
+    Page<Route> getDirectConnections(String targetAirportCode, Pageable pageable);
 
 }

@@ -3,14 +3,17 @@ package org.couchbase.quickstart.springdata.controller;
 import java.util.Optional;
 
 import javax.validation.Valid;
+import java.util.stream.Collectors;
 
 import org.couchbase.quickstart.springdata.models.Airport;
 import org.couchbase.quickstart.springdata.services.AirportService;
+import org.couchbase.quickstart.springdata.models.Route;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -123,13 +126,15 @@ public class AirportController {
     }
 
     @GetMapping("/direct-connections")
-    public ResponseEntity<Page<Airport>> listDirectConnections(
-            @RequestParam String airport,
+    public ResponseEntity<Page<String>> listDirectConnections(
+            @RequestParam String airportCode,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
-            Page<Airport> airports = airportService.getDirectConnections(airport, PageRequest.of(page, size));
-            return new ResponseEntity<>(airports, HttpStatus.OK);
+            Page<Route> airports = airportService.getDirectConnections(airportCode, PageRequest.of(page, size));
+            Page<String> directConnections = airports.map(Route::getDestinationAirport);
+            return new ResponseEntity<>(directConnections, HttpStatus.OK);
+
         } catch (Exception e) {
             log.error(INTERNAL_SERVER_ERROR, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
