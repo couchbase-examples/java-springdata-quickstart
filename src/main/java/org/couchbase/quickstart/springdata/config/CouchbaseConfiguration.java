@@ -28,8 +28,6 @@ public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
   @Value("${spring.couchbase.bucket.name}")
   private String bucket;
 
-  @Value("${spring.couchbase.scope.name}")
-  private String scope;
 
   @Override
   public String getConnectionString() {
