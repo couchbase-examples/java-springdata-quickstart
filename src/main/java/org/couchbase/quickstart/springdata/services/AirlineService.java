@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.couchbase.quickstart.springdata.models.Airline;
 import org.couchbase.quickstart.springdata.repository.AirlineRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AirlineService {
 
-    private AirlineRepository airlineRepository;
+    private final AirlineRepository airlineRepository;
 
     public AirlineService(AirlineRepository airlineRepository) {
         this.airlineRepository = airlineRepository;

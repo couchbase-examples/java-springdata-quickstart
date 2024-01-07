@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AirportService {
 
-    private AirportRepository airportRepository;
+    private final AirportRepository airportRepository;
 
     public AirportService(AirportRepository airportRepository) {
         this.airportRepository = airportRepository;

@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.couchbase.quickstart.springdata.models.Route;
 import org.couchbase.quickstart.springdata.services.RouteService;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -24,9 +25,11 @@ import com.couchbase.client.core.error.DocumentExistsException;
 import com.couchbase.client.core.error.DocumentNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/route")
+@Slf4j
 public class RouteController {
 
     private final RouteService routeService;
@@ -34,6 +37,11 @@ public class RouteController {
     public RouteController(RouteService routeService) {
         this.routeService = routeService;
     }
+
+    // All Errors
+    private static final String INTERNAL_SERVER_ERROR = "Internal server error";
+    private static final String DOCUMENT_NOT_FOUND = "Document not found";
+    private static final String DOCUMENT_ALREADY_EXISTS = "Document already exists";
 
     @Operation(summary = "Get a route by ID")
     @GetMapping("/{id}")
@@ -43,8 +51,10 @@ public class RouteController {
             return route.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                     .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (DocumentNotFoundException e) {
+            log.error(DOCUMENT_NOT_FOUND, e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            log.error(INTERNAL_SERVER_ERROR, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -56,8 +66,10 @@ public class RouteController {
             Route newRoute = routeService.createRoute(route);
             return new ResponseEntity<>(newRoute, HttpStatus.CREATED);
         } catch (DocumentExistsException e) {
+            log.error(DOCUMENT_ALREADY_EXISTS, e);
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         } catch (Exception e) {
+            log.error(INTERNAL_SERVER_ERROR, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -71,11 +83,14 @@ public class RouteController {
             if (updatedRoute != null) {
                 return new ResponseEntity<>(updatedRoute, HttpStatus.OK);
             } else {
+                log.error(DOCUMENT_NOT_FOUND);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (DocumentNotFoundException e) {
+            log.error(DOCUMENT_NOT_FOUND, e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            log.error(INTERNAL_SERVER_ERROR, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -86,9 +101,11 @@ public class RouteController {
         try {
             routeService.deleteRoute(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (DocumentNotFoundException e) {
+        } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
+            log.error(DOCUMENT_NOT_FOUND, e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            log.error(INTERNAL_SERVER_ERROR, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -100,6 +117,7 @@ public class RouteController {
             Page<Route> routes = routeService.getAllRoutes(PageRequest.of(page, size));
             return new ResponseEntity<>(routes, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(INTERNAL_SERVER_ERROR, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
