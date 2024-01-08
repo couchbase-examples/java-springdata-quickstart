@@ -9,6 +9,7 @@ import org.springframework.data.couchbase.repository.config.EnableCouchbaseRepos
 import com.couchbase.client.core.msg.kv.DurabilityLevel;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.env.ClusterEnvironment;
 import com.couchbase.client.java.manager.bucket.BucketSettings;
 import com.couchbase.client.java.manager.bucket.BucketType;
 
@@ -81,4 +82,10 @@ public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
     } 
     return cluster.bucket(getBucketName());
   }
+
+   @Override
+    @Bean(destroyMethod = "disconnect")
+    public Cluster couchbaseCluster(ClusterEnvironment couchbaseClusterEnvironment) {
+		  return Cluster.connect(getConnectionString(),getUserName(),getPassword());
+    }
 }
