@@ -1,15 +1,26 @@
-# NOT WORKING
-FROM gradle:7.3.3-jdk11 AS build
-COPY --chown=gradle:gradle . /home/gradle/src
-WORKDIR /home/gradle/src
-RUN gradle build --no-daemon 
+# Get latest java
+FROM eclipse-temurin:17-jdk-jammy AS build
 
-FROM openjdk:11-jre-slim
+# Set the working directory
+WORKDIR /app
 
+# Copy the build.gradle and settings.gradle files
+COPY build.gradle .
+COPY settings.gradle .
+COPY gradlew .
+COPY gradle ./gradle
+
+# Copy the src directory
+COPY src ./src
+
+# Build the application without running the tests and with stacktrace
+RUN ./gradlew clean build -x test --stacktrace
+
+# Expose port 8080
 EXPOSE 8080
 
-RUN mkdir /app
+# Run the application
+ENTRYPOINT ["java","-jar","/app/build/libs/java-springdata-quickstart-0.0.1-SNAPSHOT.jar"]
 
-COPY --from=build /home/gradle/src/build/libs/*.jar /app/java-springdata-quickstart.jar
-
-ENTRYPOINT ["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Djava.security.egd=file:/dev/./urandom","-jar","/app/java-springdata-quickstart.jar"]
+# docker build -t java-springdata-quickstart . 
+# docker run -d --name springdata-container -p 9440:8080 java-springdata-quickstart

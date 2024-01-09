@@ -1,22 +1,24 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.0'
+	id 'org.springframework.boot' version '2.7.18'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
 
 group = 'org.couchbase.quickstart.springdata'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 archivesBaseName = 'java-springdata-quickstart'
 
 repositories {
 	mavenCentral()
 }
 
-// ext {
-//     swaggerVersion = "3.0.0"
-//     springWebVersion = "5.3.9"
-// }
+jar {
+	manifest {
+		attributes 'Main-Class': 'org.couchbase.quickstart.springdata.Application'
+	}
+}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-couchbase'
@@ -27,7 +29,7 @@ dependencies {
 	// lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testCompileOnly 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok:'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
 	// swagger
@@ -45,3 +47,4 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
