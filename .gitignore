@@ -1,7 +1,10 @@
+*.iml
+
 .gradle
 build/
 out/
 .vscode/
+target/
 
 # Default ignored files
 shelf/

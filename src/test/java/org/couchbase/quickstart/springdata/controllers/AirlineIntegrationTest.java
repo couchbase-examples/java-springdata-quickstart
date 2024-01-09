@@ -56,7 +56,6 @@ class AirlineIntegrationTest {
                                 .callsign("MILE-AIR")
                                 .country("United States")
                                 .build();
-                System.out.println(airline.toString());
                 assertThat(airline).isEqualTo(expectedAirline);
         }
 
@@ -153,7 +152,8 @@ class AirlineIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         RestResponsePage<Airline> airlines = response.getBody();
-        Airline airline = airlines.stream().filter(a -> a.getId().equals("airline_10226")).findFirst().orElse(null);
+            assert airlines != null;
+            Airline airline = airlines.stream().filter(a -> a.getId().equals("airline_10226")).findFirst().orElse(null);
         assertThat(airline).isNotNull();
 
         Airline expectedAirline = Airline.builder()
@@ -178,7 +178,8 @@ class AirlineIntegrationTest {
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
         
         RestResponsePage<Airline> airlines2 = response2.getBody();
-        Airline airline2 = airlines2.stream().filter(a -> a.getId().equals("airline_1191")).findFirst().orElse(null);
+            assert airlines2 != null;
+            Airline airline2 = airlines2.stream().filter(a -> a.getId().equals("airline_1191")).findFirst().orElse(null);
 
         Airline expectedAirline2 = Airline.builder()
                                 .id("airline_1191")
