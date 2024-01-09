@@ -3,17 +3,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.couchbase.quickstart.springdata</groupId>
-    <artifactId>java-springdata-quickstart</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
-
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.7.18</version>
     </parent>
+
+    <groupId>org.couchbase.quickstart.springdata</groupId>
+    <artifactId>java-springdata-quickstart</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>java-springdata-quickstart</name>
+    <description>Java Spring Data Quickstart</description>
 
      <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -68,10 +69,10 @@
             <version>${springweb.version}</version>
         </dependency>
         <dependency>
-    <groupId>org.springframework.data</groupId>
-    <artifactId>spring-data-couchbase</artifactId>
-    <version>4.4.9</version>
-</dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-couchbase</artifactId>
+            <version>4.4.9</version>
+        </dependency>
         <!-- <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -84,17 +85,19 @@
             <version>${swagger.version}</version>
             <scope>compile</scope>
         </dependency>
-<dependency>
-    <groupId>jakarta.validation</groupId>
-    <artifactId>jakarta.validation-api</artifactId>
-    <version>3.0.0</version>
-</dependency>
 
-<dependency>
-    <groupId>javax.validation</groupId>
-    <artifactId>validation-api</artifactId>
-    <version>2.0.1.Final</version>
-</dependency>
+
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
 
         <dependency>
             <groupId>com.couchbase.client</groupId>
