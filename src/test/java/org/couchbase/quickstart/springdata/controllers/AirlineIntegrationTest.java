@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.couchbase.quickstart.springdata.models.Airline;
 import org.couchbase.quickstart.springdata.models.RestResponsePage;
+import org.couchbase.quickstart.springdata.services.AirlineService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,9 +13,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import com.couchbase.client.core.error.DocumentNotFoundException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AirlineIntegrationTest {
@@ -25,18 +29,45 @@ class AirlineIntegrationTest {
         @Autowired
         private TestRestTemplate restTemplate;
 
+        @Autowired
+        private AirlineService airlineService;
+
         @BeforeEach
         void setUp() {
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_create");
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_update");
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_delete");
+                try {
+                        if (airlineService.getAirlineById("airline_create").isPresent()) {
+                                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_create");
+                        }
+                        if (airlineService.getAirlineById("airline_update").isPresent()) {
+                                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_update");
+                        }
+                        if (airlineService.getAirlineById("airline_delete").isPresent()) {
+                                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_delete");
+                        }
+                } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
+                        System.out.println("Document not found during setup");
+                } catch (Exception e) {
+                        System.out.println("Error deleting test data during setup");
+                }
         }
 
         @AfterEach
         void tearDown() {
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_create");
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_update");
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_delete");
+                try {
+                        if (airlineService.getAirlineById("airline_create").isPresent()) {
+                                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_create");
+                        }
+                        if (airlineService.getAirlineById("airline_update").isPresent()) {
+                                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_update");
+                        }
+                        if (airlineService.getAirlineById("airline_delete").isPresent()) {
+                                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_delete");
+                        }
+                } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
+                        System.out.println("Document not found during teardown");
+                } catch (Exception e) {
+                        System.out.println("Error deleting test data during teardown");
+                }
         }
 
         @Test
@@ -129,11 +160,11 @@ class AirlineIntegrationTest {
         @Test
         void testListAirlines() {
                 ResponseEntity<RestResponsePage<Airline>> response = restTemplate.exchange(
-                        "http://localhost:" + port + "/api/v1/airline/list", HttpMethod.GET, null,
-                        new ParameterizedTypeReference<RestResponsePage<Airline>>() {
-                        });
+                                "http://localhost:" + port + "/api/v1/airline/list", HttpMethod.GET, null,
+                                new ParameterizedTypeReference<RestResponsePage<Airline>>() {
+                                });
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        
+
                 RestResponsePage<Airline> airlines = response.getBody();
                 assertThat(airlines).isNotNull();
                 assertThat(airlines.getSize()).isEqualTo(10);
@@ -141,22 +172,24 @@ class AirlineIntegrationTest {
 
         @Test
         void testListAirlinesByCountry() {
-               // Check that if it contains
-        // airline_10226{"id":10226,"type":"airline","name":"Atifly","iata":"A1","icao":"A1F","callsign":"atifly","country":"United
-        // States"}
-        String country = "United States";
-        ResponseEntity<RestResponsePage<Airline>> response = restTemplate.exchange(
-                "http://localhost:" + port + "/api/v1/airline/country/" + country,
-                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
-                });
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // Check that if it contains
+                // airline_10226{"id":10226,"type":"airline","name":"Atifly","iata":"A1","icao":"A1F","callsign":"atifly","country":"United
+                // States"}
+                String country = "United States";
+                ResponseEntity<RestResponsePage<Airline>> response = restTemplate.exchange(
+                                "http://localhost:" + port + "/api/v1/airline/country/" + country,
+                                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
+                                });
+                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        RestResponsePage<Airline> airlines = response.getBody();
-            assert airlines != null;
-            Airline airline = airlines.stream().filter(a -> a.getId().equals("airline_10226")).findFirst().orElse(null);
-        assertThat(airline).isNotNull();
+                RestResponsePage<Airline> airlines = response.getBody();
+                assert airlines != null;
 
-        Airline expectedAirline = Airline.builder()
+                Airline airline = airlines.stream().filter(a -> a.getId().equals("airline_10226")).findFirst()
+                                .orElse(null);
+                assertThat(airline).isNotNull();
+
+                Airline expectedAirline = Airline.builder()
                                 .id("airline_10226")
                                 .type("airline")
                                 .name("Atifly")
@@ -165,23 +198,24 @@ class AirlineIntegrationTest {
                                 .callsign("atifly")
                                 .country("United States")
                                 .build();
-        assertThat(airline).isEqualTo(expectedAirline);
+                assertThat(airline).isEqualTo(expectedAirline);
 
-        // {"id":1191,"type":"airline","name":"Air
-        // Austral","iata":"UU","icao":"REU","callsign":"REUNION","country":"France"}
+                // {"id":1191,"type":"airline","name":"Air
+                // Austral","iata":"UU","icao":"REU","callsign":"REUNION","country":"France"}
 
-        country = "France";
-        ResponseEntity<RestResponsePage<Airline>> response2 = restTemplate.exchange(
-                "http://localhost:" + port + "/api/v1/airline/country/" + country,
-                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
-                });
-        assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
-        
-        RestResponsePage<Airline> airlines2 = response2.getBody();
-            assert airlines2 != null;
-            Airline airline2 = airlines2.stream().filter(a -> a.getId().equals("airline_1191")).findFirst().orElse(null);
+                country = "France";
+                ResponseEntity<RestResponsePage<Airline>> response2 = restTemplate.exchange(
+                                "http://localhost:" + port + "/api/v1/airline/country/" + country,
+                                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
+                                });
+                assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        Airline expectedAirline2 = Airline.builder()
+                RestResponsePage<Airline> airlines2 = response2.getBody();
+                assert airlines2 != null;
+                Airline airline2 = airlines2.stream().filter(a -> a.getId().equals("airline_1191")).findFirst()
+                                .orElse(null);
+
+                Airline expectedAirline2 = Airline.builder()
                                 .id("airline_1191")
                                 .type("airline")
                                 .name("Air Austral")
@@ -190,11 +224,62 @@ class AirlineIntegrationTest {
                                 .callsign("REUNION")
                                 .country("France")
                                 .build();
-        assertThat(airline2).isEqualTo(expectedAirline2);
+                assertThat(airline2).isEqualTo(expectedAirline2);
 
         }
 
-        // @Test
-        // void testListAirlinesByDestinationAirport() {
-        // }
+        @Test
+        void testListAirlinesByDestinationAirport() {
+
+                String airport = "LAX";
+                ResponseEntity<RestResponsePage<Airline>> response = restTemplate.exchange(
+                                "http://localhost:" + port + "/api/v1/airline/destination/" + airport,
+                                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
+                                });
+                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+                RestResponsePage<Airline> airlines = response.getBody();
+                assert airlines != null;
+                Airline airline = airlines.stream().filter(a -> a.getId().equals("airline_3029")).findFirst()
+                                .orElse(null);
+                assertThat(airline).isNotNull();
+
+                Airline expectedAirline = Airline.builder()
+                                .id("airline_3029")
+                                .type("airline")
+                                .name("JetBlue Airways")
+                                .iata("B6")
+                                .icao("JBU")
+                                .callsign("JETBLUE")
+                                .country("United States")
+                                .build();
+                assertThat(airline).isEqualTo(expectedAirline);
+
+                airport = "CDG";
+                ResponseEntity<RestResponsePage<Airline>> response2 = restTemplate.exchange(
+                                "http://localhost:" + port + "/api/v1/airline/destination/" + airport,
+                                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
+                                });
+
+                assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
+                RestResponsePage<Airline> airlines2 = response2.getBody();
+
+                assert airlines2 != null;
+
+                Airline airline2 = airlines2.stream().filter(a -> a.getId().equals("airline_137")).findFirst()
+                                .orElse(null);
+
+                Airline expectedAirline2 = Airline.builder()
+                                .id("airline_137")
+                                .type("airline")
+                                .name("Air France")
+                                .iata("AF")
+                                .icao("AFR")
+                                .callsign("AIRFRANS")
+                                .country("France")
+                                .build();
+
+                assertThat(airline2).isEqualTo(expectedAirline2);
+
+        }
 }

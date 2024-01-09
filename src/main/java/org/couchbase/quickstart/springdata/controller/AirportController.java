@@ -113,6 +113,7 @@ public class AirportController {
         }
     }
 
+    @Operation(summary = "List all airports")
     @GetMapping("/list")
     public ResponseEntity<Page<Airport>> listAirports(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -125,9 +126,10 @@ public class AirportController {
         }
     }
 
-    @GetMapping("/direct-connections")
+    @Operation(summary = "List of direct connections to an airport")
+    @GetMapping("/direct-connections/{airportCode}")
     public ResponseEntity<Page<String>> listDirectConnections(
-            @RequestParam String airportCode,
+            @PathVariable String airportCode,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
