@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.couchbase.quickstart.springdata.models.Airport;
 import org.couchbase.quickstart.springdata.models.Airport.Geo;
 import org.couchbase.quickstart.springdata.models.RestResponsePage;
+import org.couchbase.quickstart.springdata.services.AirportService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,9 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import com.couchbase.client.core.error.DocumentNotFoundException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AirportIntegrationTest {
@@ -26,18 +30,45 @@ class AirportIntegrationTest {
         @Autowired
         private TestRestTemplate restTemplate;
 
+        @Autowired
+        private AirportService airportService;
+
         @BeforeEach
         void setUp() {
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_create");
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_update");
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_delete");
+                try {
+                        if (airportService.getAirportById("airport_create").isPresent()) {
+                                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_create");
+                        }
+                        if (airportService.getAirportById("airport_update").isPresent()) {
+                                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_update");
+                        }
+                        if (airportService.getAirportById("airport_delete").isPresent()) {
+                                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_delete");
+                        }
+                } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
+                        System.out.println("Document not found during setup");
+                } catch (Exception e) {
+                        System.out.println("Error deleting test data during setup");
+                }
         }
 
         @AfterEach
         void tearDown() {
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_create");
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_update");
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_delete");
+                try {
+                        if (airportService.getAirportById("airport_create").isPresent()) {
+                                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_create");
+                        }
+                        if (airportService.getAirportById("airport_update").isPresent()) {
+                                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_update");
+                        }
+                        if (airportService.getAirportById("airport_delete").isPresent()) {
+                                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_delete");
+                        }
+                } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
+                        System.out.println("Document not found during setup");
+                } catch (Exception e) {
+                        System.out.println("Error deleting test data during setup");
+                }
         }
 
         @Test
