@@ -146,12 +146,33 @@ class AirportIntegrationTest {
                 assertThat(airports).hasSize(10);
         }
 
-        // Uncomment this test and modify it similarly if you want to include it
-        // @Test
-        // void testListDirectConnections() {
-        // ResponseEntity<List> response = restTemplate.getForEntity("http://localhost:"
-        // + port + "/api/v1/airport/direct-connections?airportCode=test", List.class);
-        // assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // // Add more assertions as needed
-        // }
+        @Test
+        void testListDirectConnections() {
+                String airportCode = "LAX";
+                ResponseEntity<RestResponsePage<String>> response = restTemplate.exchange(
+                                "http://localhost:" + port + "/api/v1/airport/direct-connections/" + airportCode,
+                                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<String>>() {
+                                });
+                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+                RestResponsePage<String> directConnections = response.getBody();
+
+                assertThat(directConnections).isNotNull().hasSize(10);
+                assertThat(directConnections).contains("NRT", "CUN", "GDL", "HMO", "MEX", "MZT", "PVR", "SJD", "ZIH",
+                                "ZLO");
+
+                airportCode = "JFK";
+                response = restTemplate.exchange(
+                                "http://localhost:" + port + "/api/v1/airport/direct-connections/" + airportCode,
+                                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<String>>() {
+                                });
+                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+                directConnections = response.getBody();
+
+                assertThat(directConnections).isNotNull().hasSize(10);
+                assertThat(directConnections).contains("DEL", "LHR", "EZE", "ATL", "CUN", "MEX", "EZE", "LAX", "SAN",
+                                "SEA");
+
+        }
 }

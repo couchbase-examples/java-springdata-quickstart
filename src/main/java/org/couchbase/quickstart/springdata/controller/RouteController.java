@@ -110,6 +110,7 @@ public class RouteController {
         }
     }
 
+    @Operation(summary = "List all routes")
     @GetMapping("/list")
     public ResponseEntity<Page<Route>> listRoutes(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
