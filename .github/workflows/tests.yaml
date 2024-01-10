@@ -38,7 +38,7 @@ jobs:
 
       - name: Run Gradle Tests
         id: run
-        run: ./gradlew --no-daemon test
+        run: ./gradlew test --stacktrace 
 
       - name: Report Status
         if: always()
