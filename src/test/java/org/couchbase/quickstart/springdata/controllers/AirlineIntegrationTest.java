@@ -26,6 +26,9 @@ class AirlineIntegrationTest {
         @Value("${local.server.port}")
         private int port;
 
+        @Value("${spring.couchbase.bootstrap-hosts}")
+        private String bootstrapHosts;
+
         @Autowired
         private TestRestTemplate restTemplate;
 
@@ -34,15 +37,22 @@ class AirlineIntegrationTest {
 
         @BeforeEach
         void setUp() {
+                String baseUri = "";
+                if (bootstrapHosts.contains("localhost")) {
+                        baseUri = "http://localhost:" + port;
+                } else {
+                        baseUri = bootstrapHosts;
+                }
+                System.out.println("baseUri: " + baseUri);
                 try {
                         if (airlineService.getAirlineById("airline_create").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_create");
+                                restTemplate.delete(baseUri + "/api/v1/airline/airline_create");
                         }
                         if (airlineService.getAirlineById("airline_update").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_update");
+                                restTemplate.delete(baseUri + "/api/v1/airline/airline_update");
                         }
                         if (airlineService.getAirlineById("airline_delete").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_delete");
+                                restTemplate.delete(baseUri + "/api/v1/airline/airline_delete");
                         }
                 } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
                         System.out.println("Document not found during setup");
@@ -53,15 +63,22 @@ class AirlineIntegrationTest {
 
         @AfterEach
         void tearDown() {
+                String baseUri = "";
+                if (bootstrapHosts.contains("localhost")) {
+                        baseUri = "http://localhost:" + port;
+                } else {
+                        baseUri = bootstrapHosts;
+                }
+                System.out.println("baseUri: " + baseUri);
                 try {
                         if (airlineService.getAirlineById("airline_create").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_create");
+                                restTemplate.delete(baseUri + "/api/v1/airline/airline_create");
                         }
                         if (airlineService.getAirlineById("airline_update").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_update");
+                                restTemplate.delete(baseUri + "/api/v1/airline/airline_update");
                         }
                         if (airlineService.getAirlineById("airline_delete").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/airline_delete");
+                                restTemplate.delete(baseUri + "/api/v1/airline/airline_delete");
                         }
                 } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
                         System.out.println("Document not found during teardown");

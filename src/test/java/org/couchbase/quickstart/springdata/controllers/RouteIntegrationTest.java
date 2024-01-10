@@ -28,6 +28,9 @@ class RouteIntegrationTest {
         @Value("${local.server.port}")
         private int port;
 
+        @Value("${spring.couchbase.bootstrap-hosts}")
+        private String bootstrapHosts;
+
         @Autowired
         private TestRestTemplate restTemplate;
 
@@ -36,15 +39,23 @@ class RouteIntegrationTest {
 
         @BeforeEach
         void setUp() {
+
+                String baseUri = "";
+                if (bootstrapHosts.contains("localhost")) {
+                        baseUri = "http://localhost:" + port;
+                } else {
+                        baseUri = bootstrapHosts;
+                }
+
                 try {
                         if (routeService.getRouteById("route_create").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/route/route_create");
+                                restTemplate.delete(baseUri + "/api/v1/route/route_create");
                         }
                         if (routeService.getRouteById("route_update").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/route/route_update");
+                                restTemplate.delete(baseUri + "/api/v1/route/route_update");
                         }
                         if (routeService.getRouteById("route_delete").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/route/route_delete");
+                                restTemplate.delete(baseUri + "/api/v1/route/route_delete");
                         }
                 } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
                         System.out.println("Document not found during setup");
@@ -55,15 +66,23 @@ class RouteIntegrationTest {
 
         @AfterEach
         void tearDown() {
+
+                String baseUri = "";
+                if (bootstrapHosts.contains("localhost")) {
+                        baseUri = "http://localhost:" + port;
+                } else {
+                        baseUri = bootstrapHosts;
+                }
+
                 try {
                         if (routeService.getRouteById("route_create").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/route/route_create");
+                                restTemplate.delete(baseUri + "/api/v1/route/route_create");
                         }
                         if (routeService.getRouteById("route_update").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/route/route_update");
+                                restTemplate.delete(baseUri + "/api/v1/route/route_update");
                         }
                         if (routeService.getRouteById("route_delete").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/route/route_delete");
+                                restTemplate.delete(baseUri + "/api/v1/route/route_delete");
                         }
                 } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
                         System.out.println("Document not found during setup");

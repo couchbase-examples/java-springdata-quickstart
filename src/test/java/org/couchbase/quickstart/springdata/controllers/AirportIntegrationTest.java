@@ -27,6 +27,9 @@ class AirportIntegrationTest {
         @Value("${local.server.port}")
         private int port;
 
+        @Value("${spring.couchbase.bootstrap-hosts}")
+        private String bootstrapHosts;
+
         @Autowired
         private TestRestTemplate restTemplate;
 
@@ -35,34 +38,49 @@ class AirportIntegrationTest {
 
         @BeforeEach
         void setUp() {
+
+                String baseUri = "";
+                if (bootstrapHosts.contains("localhost")) {
+                        baseUri = "http://localhost:" + port;
+                } else {
+                        baseUri = bootstrapHosts;
+                }
+
                 try {
-                        if (airportService.getAirportById("airport_create").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_create");
+                         if (airportService.getAirportById("airport_create").isPresent()) {
+                                restTemplate.delete(baseUri + "/api/v1/airport/airport_create");
                         }
                         if (airportService.getAirportById("airport_update").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_update");
+                                restTemplate.delete(baseUri + "/api/v1/airport/airport_update");
                         }
                         if (airportService.getAirportById("airport_delete").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_delete");
+                                restTemplate.delete(baseUri + "/api/v1/airport/airport_delete");
                         }
+
                 } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
                         System.out.println("Document not found during setup");
                 } catch (Exception e) {
-                        System.out.println("Error deleting test data during setup");
+                        System.out.println("Error creating test data during setup");
                 }
         }
 
         @AfterEach
         void tearDown() {
+                String baseUri = "";
+                if (bootstrapHosts.contains("localhost")) {
+                        baseUri = "http://localhost:" + port;
+                } else {
+                        baseUri = bootstrapHosts;
+                }
                 try {
                         if (airportService.getAirportById("airport_create").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_create");
+                                restTemplate.delete(baseUri + "/api/v1/airport/airport_create");
                         }
                         if (airportService.getAirportById("airport_update").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_update");
+                                restTemplate.delete(baseUri + "/api/v1/airport/airport_update");
                         }
                         if (airportService.getAirportById("airport_delete").isPresent()) {
-                                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/airport_delete");
+                                restTemplate.delete(baseUri + "/api/v1/airport/airport_delete");
                         }
                 } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
                         System.out.println("Document not found during setup");
