@@ -32,6 +32,9 @@ jobs:
 
       - name: Replace secrets in application.properties
         run: |
+          echo ${{ secrets.DB_CONN_STR }}
+          echo ${{ secrets.DB_USERNAME }}
+          echo ${{ secrets.DB_PASSWORD }}
           sed -i "s/\${DB_CONN_STR}/${{ secrets.DB_CONN_STR }}/g" src/main/resources/application.properties
           sed -i "s/\${DB_USERNAME}/${{ secrets.DB_USERNAME }}/g" src/main/resources/application.properties
           sed -i "s/\${DB_PASSWORD}/${{ secrets.DB_PASSWORD }}/g" src/main/resources/application.properties
