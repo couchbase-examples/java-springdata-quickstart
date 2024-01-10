@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Update repositories
         run: |
-          apt update || echo "apt-update failed" # && apt -y upgrade
+          sudo apt update || echo "apt-update failed" # && apt -y upgrade
 
       - name: Checkout ${{ github.event.repository.name }}
         uses: actions/checkout@v4
@@ -32,9 +32,9 @@ jobs:
 
       - name: Setup couchbase
         run: |
-          apt install -y iputils-ping || echo "apt-install failed"
+          sudo apt install -y iputils-ping || echo "apt-install failed"
           ping -c 1 couchbase && (
-            apt install -y socat
+            sudo apt install -y socat
             socat TCP-LISTEN:8091,fork TCP:couchbase:8091 &
             socat TCP-LISTEN:8092,fork TCP:couchbase:8092 &
             socat TCP-LISTEN:8093,fork TCP:couchbase:8093 &
