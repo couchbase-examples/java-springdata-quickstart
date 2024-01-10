@@ -35,62 +35,52 @@ class AirlineIntegrationTest {
         @Autowired
         private AirlineService airlineService;
 
-        @BeforeEach
-        void setUp() {
+        private void deleteAirline(String baseUri, String airlineId) {
+                try {
+                        if (airlineService.getAirlineById(airlineId).isPresent()) {
+                                restTemplate.delete(baseUri + "/api/v1/airline/" + airlineId);
+                        }
+                } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
+                        System.out.println("Document not found");
+                } catch (Exception e) {
+                        System.out.println("Error deleting test data");
+                }
+        }
+
+        private void deleteTestAirlineData(String baseUri) {
+                deleteAirline(baseUri, "airline_create");
+                deleteAirline(baseUri, "airline_update");
+                deleteAirline(baseUri, "airline_delete");
+        }
+
+        private String getBaseUri() {
                 String baseUri = "";
                 if (bootstrapHosts.contains("localhost")) {
                         baseUri = "http://localhost:" + port;
                 } else {
                         baseUri = bootstrapHosts;
                 }
+                return baseUri;
+        }
+
+        @BeforeEach
+        void setUp() {
+                String baseUri = getBaseUri();
                 System.out.println("baseUri: " + baseUri);
-                try {
-                        if (airlineService.getAirlineById("airline_create").isPresent()) {
-                                restTemplate.delete(baseUri + "/api/v1/airline/airline_create");
-                        }
-                        if (airlineService.getAirlineById("airline_update").isPresent()) {
-                                restTemplate.delete(baseUri + "/api/v1/airline/airline_update");
-                        }
-                        if (airlineService.getAirlineById("airline_delete").isPresent()) {
-                                restTemplate.delete(baseUri + "/api/v1/airline/airline_delete");
-                        }
-                } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
-                        System.out.println("Document not found during setup");
-                } catch (Exception e) {
-                        System.out.println("Error deleting test data during setup");
-                }
+                deleteTestAirlineData(baseUri);
         }
 
         @AfterEach
         void tearDown() {
-                String baseUri = "";
-                if (bootstrapHosts.contains("localhost")) {
-                        baseUri = "http://localhost:" + port;
-                } else {
-                        baseUri = bootstrapHosts;
-                }
+                String baseUri = getBaseUri();
                 System.out.println("baseUri: " + baseUri);
-                try {
-                        if (airlineService.getAirlineById("airline_create").isPresent()) {
-                                restTemplate.delete(baseUri + "/api/v1/airline/airline_create");
-                        }
-                        if (airlineService.getAirlineById("airline_update").isPresent()) {
-                                restTemplate.delete(baseUri + "/api/v1/airline/airline_update");
-                        }
-                        if (airlineService.getAirlineById("airline_delete").isPresent()) {
-                                restTemplate.delete(baseUri + "/api/v1/airline/airline_delete");
-                        }
-                } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
-                        System.out.println("Document not found during teardown");
-                } catch (Exception e) {
-                        System.out.println("Error deleting test data during teardown");
-                }
+                deleteTestAirlineData(baseUri);
         }
 
         @Test
         void testGetAirline() {
                 ResponseEntity<Airline> response = restTemplate
-                                .getForEntity("http://localhost:" + port + "/api/v1/airline/airline_10", Airline.class);
+                                .getForEntity("/api/v1/airline/airline_10", Airline.class);
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
                 Airline airline = response.getBody();
                 assert airline != null;
@@ -120,7 +110,7 @@ class AirlineIntegrationTest {
                                 .country("United States")
                                 .build();
                 ResponseEntity<Airline> response = restTemplate.postForEntity(
-                                "http://localhost:" + port + "/api/v1/airline/" + airline.getId(), airline,
+                                "/api/v1/airline/" + airline.getId(), airline,
                                 Airline.class);
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
                 Airline createdAirline = response.getBody();
@@ -140,11 +130,11 @@ class AirlineIntegrationTest {
                                 .callsign("TEST")
                                 .country("United States")
                                 .build();
-                restTemplate.postForEntity("http://localhost:" + port + "/api/v1/airline/" + airline.getId(), airline,
+                restTemplate.postForEntity("/api/v1/airline/" + airline.getId(), airline,
                                 Airline.class);
-                restTemplate.put("http://localhost:" + port + "/api/v1/airline/" + airline.getId(), airline);
+                restTemplate.put("/api/v1/airline/" + airline.getId(), airline);
                 ResponseEntity<Airline> response = restTemplate
-                                .getForEntity("http://localhost:" + port + "/api/v1/airline/" + airline.getId(),
+                                .getForEntity("/api/v1/airline/" + airline.getId(),
                                                 Airline.class);
 
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -166,11 +156,11 @@ class AirlineIntegrationTest {
                                 .callsign("TEST")
                                 .country("United States")
                                 .build();
-                restTemplate.postForEntity("http://localhost:" + port + "/api/v1/airline/" + airline.getId(), airline,
+                restTemplate.postForEntity("/api/v1/airline/" + airline.getId(), airline,
                                 Airline.class);
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airline/" + airlineIdToDelete);
+                restTemplate.delete("/api/v1/airline/" + airlineIdToDelete);
                 ResponseEntity<Airline> response = restTemplate
-                                .getForEntity("http://localhost:" + port + "/api/v1/airline/" + airlineIdToDelete,
+                                .getForEntity("/api/v1/airline/" + airlineIdToDelete,
                                                 Airline.class);
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         }
@@ -178,7 +168,7 @@ class AirlineIntegrationTest {
         @Test
         void testListAirlines() {
                 ResponseEntity<RestResponsePage<Airline>> response = restTemplate.exchange(
-                                "http://localhost:" + port + "/api/v1/airline/list", HttpMethod.GET, null,
+                                "/api/v1/airline/list", HttpMethod.GET, null,
                                 new ParameterizedTypeReference<RestResponsePage<Airline>>() {
                                 });
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -195,7 +185,7 @@ class AirlineIntegrationTest {
                 // States"}
                 String country = "United States";
                 ResponseEntity<RestResponsePage<Airline>> response = restTemplate.exchange(
-                                "http://localhost:" + port + "/api/v1/airline/country/" + country,
+                                "/api/v1/airline/country/" + country,
                                 HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
                                 });
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -223,7 +213,7 @@ class AirlineIntegrationTest {
 
                 country = "France";
                 ResponseEntity<RestResponsePage<Airline>> response2 = restTemplate.exchange(
-                                "http://localhost:" + port + "/api/v1/airline/country/" + country,
+                                "/api/v1/airline/country/" + country,
                                 HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
                                 });
                 assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -251,7 +241,7 @@ class AirlineIntegrationTest {
 
                 String airport = "LAX";
                 ResponseEntity<RestResponsePage<Airline>> response = restTemplate.exchange(
-                                "http://localhost:" + port + "/api/v1/airline/destination/" + airport,
+                                "/api/v1/airline/destination/" + airport,
                                 HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
                                 });
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -275,7 +265,7 @@ class AirlineIntegrationTest {
 
                 airport = "CDG";
                 ResponseEntity<RestResponsePage<Airline>> response2 = restTemplate.exchange(
-                                "http://localhost:" + port + "/api/v1/airline/destination/" + airport,
+                                "/api/v1/airline/destination/" + airport,
                                 HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
                                 });
 

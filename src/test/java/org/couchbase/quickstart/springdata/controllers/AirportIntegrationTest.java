@@ -36,63 +36,52 @@ class AirportIntegrationTest {
         @Autowired
         private AirportService airportService;
 
-        @BeforeEach
-        void setUp() {
+        private void deleteAirport(String baseUri, String airportId) {
+                try {
+                        if (airportService.getAirportById(airportId).isPresent()) {
+                                restTemplate.delete(baseUri + "/api/v1/airport/" + airportId);
+                        }
+                } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
+                        System.out.println("Document not found");
+                } catch (Exception e) {
+                        System.out.println("Error deleting test data");
+                }
+        }
 
+        private void deleteTestAirportData(String baseUri) {
+                deleteAirport(baseUri, "airport_create");
+                deleteAirport(baseUri, "airport_update");
+                deleteAirport(baseUri, "airport_delete");
+        }
+
+        private String getBaseUri() {
                 String baseUri = "";
                 if (bootstrapHosts.contains("localhost")) {
                         baseUri = "http://localhost:" + port;
                 } else {
                         baseUri = bootstrapHosts;
                 }
+                return baseUri;
+        }
 
-                try {
-                         if (airportService.getAirportById("airport_create").isPresent()) {
-                                restTemplate.delete(baseUri + "/api/v1/airport/airport_create");
-                        }
-                        if (airportService.getAirportById("airport_update").isPresent()) {
-                                restTemplate.delete(baseUri + "/api/v1/airport/airport_update");
-                        }
-                        if (airportService.getAirportById("airport_delete").isPresent()) {
-                                restTemplate.delete(baseUri + "/api/v1/airport/airport_delete");
-                        }
-
-                } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
-                        System.out.println("Document not found during setup");
-                } catch (Exception e) {
-                        System.out.println("Error creating test data during setup");
-                }
+        @BeforeEach
+        void setUp() {
+                String baseUri = getBaseUri();
+                System.out.println("baseUri: " + baseUri);
+                deleteTestAirportData(baseUri);
         }
 
         @AfterEach
         void tearDown() {
-                String baseUri = "";
-                if (bootstrapHosts.contains("localhost")) {
-                        baseUri = "http://localhost:" + port;
-                } else {
-                        baseUri = bootstrapHosts;
-                }
-                try {
-                        if (airportService.getAirportById("airport_create").isPresent()) {
-                                restTemplate.delete(baseUri + "/api/v1/airport/airport_create");
-                        }
-                        if (airportService.getAirportById("airport_update").isPresent()) {
-                                restTemplate.delete(baseUri + "/api/v1/airport/airport_update");
-                        }
-                        if (airportService.getAirportById("airport_delete").isPresent()) {
-                                restTemplate.delete(baseUri + "/api/v1/airport/airport_delete");
-                        }
-                } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
-                        System.out.println("Document not found during setup");
-                } catch (Exception e) {
-                        System.out.println("Error deleting test data during setup");
-                }
+                String baseUri = getBaseUri();
+                System.out.println("baseUri: " + baseUri);
+                deleteTestAirportData(baseUri);
         }
 
         @Test
         void testGetAirport() {
                 ResponseEntity<Airport> response = restTemplate
-                                .getForEntity("http://localhost:" + port + "/api/v1/airport/airport_1254",
+                                .getForEntity("/api/v1/airport/airport_1254",
                                                 Airport.class);
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
                 Airport airport = response.getBody();
@@ -110,7 +99,7 @@ class AirportIntegrationTest {
                                 .city("Test City").country("Test Country").faa("TST").icao("TEST")
                                 .tz("Test Timezone").geo(new Geo(1.0, 2.0, 3.0)).build();
                 ResponseEntity<Airport> response = restTemplate.postForEntity(
-                                "http://localhost:" + port + "/api/v1/airport/" + airport.getId(), airport,
+                                "/api/v1/airport/" + airport.getId(), airport,
                                 Airport.class);
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
                 Airport createdAirport = response.getBody();
@@ -124,11 +113,11 @@ class AirportIntegrationTest {
                                 .airportName("Updated Test Airport").city("Updated Test City")
                                 .country("Updated Test Country").faa("TST").icao("TEST")
                                 .tz("Updated Test Timezone").geo(new Geo(1.0, 2.0, 3.0)).build();
-                restTemplate.postForEntity("http://localhost:" + port + "/api/v1/airport/" + airport.getId(), airport,
+                restTemplate.postForEntity("/api/v1/airport/" + airport.getId(), airport,
                                 Airport.class);
-                restTemplate.put("http://localhost:" + port + "/api/v1/airport/" + airport.getId(), airport);
+                restTemplate.put("/api/v1/airport/" + airport.getId(), airport);
                 ResponseEntity<Airport> response = restTemplate
-                                .getForEntity("http://localhost:" + port + "/api/v1/airport/" + airport.getId(),
+                                .getForEntity("/api/v1/airport/" + airport.getId(),
                                                 Airport.class);
 
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -142,11 +131,11 @@ class AirportIntegrationTest {
                 Airport airport = Airport.builder().id("airport_delete").type("airport").airportName("Test Airport")
                                 .city("Test City").country("Test Country").faa("TST").icao("TEST")
                                 .tz("Test Timezone").geo(new Geo(1.0, 2.0, 3.0)).build();
-                restTemplate.postForEntity("http://localhost:" + port + "/api/v1/airport/" + airport.getId(), airport,
+                restTemplate.postForEntity("/api/v1/airport/" + airport.getId(), airport,
                                 Airport.class);
-                restTemplate.delete("http://localhost:" + port + "/api/v1/airport/" + airport.getId());
+                restTemplate.delete("/api/v1/airport/" + airport.getId());
                 ResponseEntity<Airport> response = restTemplate
-                                .getForEntity("http://localhost:" + port + "/api/v1/airport/" + airport.getId(),
+                                .getForEntity("/api/v1/airport/" + airport.getId(),
                                                 Airport.class);
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         }
@@ -154,7 +143,7 @@ class AirportIntegrationTest {
         @Test
         void testListAirports() {
                 ResponseEntity<RestResponsePage<Airport>> response = restTemplate.exchange(
-                                "http://localhost:" + port + "/api/v1/airport/list", HttpMethod.GET, null,
+                                "/api/v1/airport/list", HttpMethod.GET, null,
                                 new ParameterizedTypeReference<RestResponsePage<Airport>>() {
                                 });
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -168,7 +157,7 @@ class AirportIntegrationTest {
         void testListDirectConnections() {
                 String airportCode = "LAX";
                 ResponseEntity<RestResponsePage<String>> response = restTemplate.exchange(
-                                "http://localhost:" + port + "/api/v1/airport/direct-connections/" + airportCode,
+                                "/api/v1/airport/direct-connections/" + airportCode,
                                 HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<String>>() {
                                 });
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -181,7 +170,7 @@ class AirportIntegrationTest {
 
                 airportCode = "JFK";
                 response = restTemplate.exchange(
-                                "http://localhost:" + port + "/api/v1/airport/direct-connections/" + airportCode,
+                                "/api/v1/airport/direct-connections/" + airportCode,
                                 HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<String>>() {
                                 });
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
