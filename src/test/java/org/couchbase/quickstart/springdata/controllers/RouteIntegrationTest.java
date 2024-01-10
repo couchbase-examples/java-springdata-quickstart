@@ -3,6 +3,7 @@ package org.couchbase.quickstart.springdata.controllers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.couchbase.quickstart.springdata.models.RestResponsePage;
 import org.couchbase.quickstart.springdata.models.Route;
@@ -85,23 +86,45 @@ class RouteIntegrationTest {
         @Test
         void testGetRoute() throws Exception {
                 ResponseEntity<Route> response = restTemplate
-                                .getForEntity("/api/v1/route/route_10000", Route.class);
+                                .getForEntity("/api/v1/route/route_10001", Route.class);
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
                 Route route = response.getBody();
                 assert route != null;
-
                 Route expectedRoute = Route.builder()
-                                .id("route_10000")
-                                .type("null")
+                                .id("route_10001")
+                                .type("route")
                                 .airline("AF")
-                                .airlineId("airline_10")
-                                .sourceAirport("SFO")
-                                .destinationAirport("JFK")
+                                .airlineId("airline_137")
+                                .sourceAirport("TLV")
+                                .destinationAirport("NCE")
                                 .stops(0)
                                 .equipment("320")
                                 .schedule(Arrays.asList(
-                                                new Route.Schedule(0, "AF10", "10:05:00")))
-                                .distance(4151.79)
+                                                new Route.Schedule(0, "AF248", "21:24:00"),
+                                                new Route.Schedule(1, "AF517", "13:36:00"),
+                                                new Route.Schedule(1, "AF279", "21:35:00"),
+                                                new Route.Schedule(1, "AF753", "00:54:00"),
+                                                new Route.Schedule(1, "AF079", "15:29:00"),
+                                                new Route.Schedule(1, "AF756", "06:16:00"),
+                                                new Route.Schedule(2, "AF499", "03:39:00"),
+                                                new Route.Schedule(2, "AF158", "08:49:00"),
+                                                new Route.Schedule(2, "AF337", "06:01:00"),
+                                                new Route.Schedule(2, "AF436", "11:48:00"),
+                                                new Route.Schedule(2, "AF660", "09:35:00"),
+                                                new Route.Schedule(3, "AF692", "12:55:00"),
+                                                new Route.Schedule(3, "AF815", "19:38:00"),
+                                                new Route.Schedule(3, "AF455", "12:33:00"),
+                                                new Route.Schedule(3, "AF926", "19:45:00"),
+                                                new Route.Schedule(4, "AF133", "10:36:00"),
+                                                new Route.Schedule(4, "AF999", "07:46:00"),
+                                                new Route.Schedule(4, "AF703", "15:42:00"),
+                                                new Route.Schedule(5, "AF656", "05:40:00"),
+                                                new Route.Schedule(6, "AF185", "16:21:00"),
+                                                new Route.Schedule(6, "AF110", "00:56:00"),
+                                                new Route.Schedule(6, "AF783", "06:07:00"),
+                                                new Route.Schedule(6, "AF108", "04:54:00"),
+                                                new Route.Schedule(6, "AF673", "12:07:00")))
+                                .distance(2735.2013399811754)
                                 .build();
                 assertThat(route).isEqualTo(expectedRoute);
         }

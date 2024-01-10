@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.Field;
 
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Route implements Serializable {
 
+    @Id
     @NotBlank(message = "Id is mandatory")
     private String id;
 
