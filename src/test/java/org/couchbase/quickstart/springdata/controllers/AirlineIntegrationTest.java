@@ -20,6 +20,9 @@ import org.springframework.http.ResponseEntity;
 
 import com.couchbase.client.core.error.DocumentNotFoundException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AirlineIntegrationTest {
 
@@ -41,9 +44,9 @@ class AirlineIntegrationTest {
                                 restTemplate.delete(baseUri + "/api/v1/airline/" + airlineId);
                         }
                 } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
-                        System.out.println("Document not found");
+                        log.error("Document not found");
                 } catch (Exception e) {
-                        System.out.println("Error deleting test data");
+                        log.error("Error deleting test data");
                 }
         }
 
@@ -66,14 +69,14 @@ class AirlineIntegrationTest {
         @BeforeEach
         void setUp() {
                 String baseUri = getBaseUri();
-                System.out.println("baseUri: " + baseUri);
+                log.info("baseUri: " + baseUri);
                 deleteTestAirlineData(baseUri);
         }
 
         @AfterEach
         void tearDown() {
                 String baseUri = getBaseUri();
-                System.out.println("baseUri: " + baseUri);
+                log.info("baseUri: " + baseUri);
                 deleteTestAirlineData(baseUri);
         }
 
@@ -94,7 +97,6 @@ class AirlineIntegrationTest {
                                 .callsign("MILE-AIR")
                                 .country("United States")
                                 .build();
-                System.out.println(airline.toString());
                 assertThat(airline).isEqualTo(expectedAirline);
         }
 

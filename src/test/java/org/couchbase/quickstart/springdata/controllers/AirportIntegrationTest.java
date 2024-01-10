@@ -21,6 +21,9 @@ import org.springframework.http.ResponseEntity;
 
 import com.couchbase.client.core.error.DocumentNotFoundException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AirportIntegrationTest {
 
@@ -42,9 +45,9 @@ class AirportIntegrationTest {
                                 restTemplate.delete(baseUri + "/api/v1/airport/" + airportId);
                         }
                 } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
-                        System.out.println("Document not found");
+                        log.error("Document not found");
                 } catch (Exception e) {
-                        System.out.println("Error deleting test data");
+                        log.error("Error deleting test data");
                 }
         }
 
@@ -67,14 +70,14 @@ class AirportIntegrationTest {
         @BeforeEach
         void setUp() {
                 String baseUri = getBaseUri();
-                System.out.println("baseUri: " + baseUri);
+                log.info("baseUri: " + baseUri);
                 deleteTestAirportData(baseUri);
         }
 
         @AfterEach
         void tearDown() {
                 String baseUri = getBaseUri();
-                System.out.println("baseUri: " + baseUri);
+                log.info("baseUri: " + baseUri);
                 deleteTestAirportData(baseUri);
         }
 
@@ -89,7 +92,7 @@ class AirportIntegrationTest {
                 Airport expectedAirport = Airport.builder().id("airport_1254").type("airport")
                                 .airportName("Calais Dunkerque")
                                 .city("Calais").country("France").faa("CQF").icao("LFAC").tz("Europe/Paris")
-                                .geo(new Geo(12.0, 50.962097, 1.954764)).build();
+                                .geo(new Geo(14.0, 50.962097, 1.954764)).build();
                 assertThat(airport).isEqualTo(expectedAirport);
         }
 

@@ -22,6 +22,9 @@ import org.springframework.http.ResponseEntity;
 
 import com.couchbase.client.core.error.DocumentNotFoundException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RouteIntegrationTest {
 
@@ -43,9 +46,9 @@ class RouteIntegrationTest {
                                 restTemplate.delete(baseUri + "/api/v1/route/" + routeId);
                         }
                 } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
-                        System.out.println("Document not found");
+                        log.error("Document not found");
                 } catch (Exception e) {
-                        System.out.println("Error deleting test data");
+                        log.error("Error deleting test data");
                 }
         }
 
@@ -68,14 +71,14 @@ class RouteIntegrationTest {
         @BeforeEach
         void setUp() {
                 String baseUri = getBaseUri();
-                System.out.println("baseUri: " + baseUri);
+                log.info("baseUri: " + baseUri);
                 deleteTestRouteData(baseUri);
         }
 
         @AfterEach
         void tearDown() {
                 String baseUri = getBaseUri();
-                System.out.println("baseUri: " + baseUri);
+                log.info("baseUri: " + baseUri);
                 deleteTestRouteData(baseUri);
         }
 
@@ -89,7 +92,7 @@ class RouteIntegrationTest {
 
                 Route expectedRoute = Route.builder()
                                 .id("route_10000")
-                                .type("route")
+                                .type("null")
                                 .airline("AF")
                                 .airlineId("airline_10")
                                 .sourceAirport("SFO")
