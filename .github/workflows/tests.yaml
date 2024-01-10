@@ -32,9 +32,9 @@ jobs:
 
       - name: Replace secrets in application.properties
         run: |
-          sed -i "s#\\${DB_CONN_STR}#${{ vars.DB_CONN_STR }}#g" src/main/resources/application.properties
-          sed -i "s#\\${DB_USERNAME}#${{ vars.DB_USERNAME }}#g" src/main/resources/application.properties
-          sed -i "s#\\${DB_PASSWORD}#${{ secrets.DB_PASSWORD }}#g" src/main/resources/application.properties
+          sed -i "s#\\\$\\{DB_CONN_STR\\}#${{ vars.DB_CONN_STR }}#g" src/main/resources/application.properties
+          sed -i "s#\\\$\\{DB_USERNAME\\}#${{ vars.DB_USERNAME }}#g" src/main/resources/application.properties
+          sed -i "s#\\\$\\{DB_PASSWORD\\}#${{ secrets.DB_PASSWORD }}#g" src/main/resources/application.properties
         shell: /usr/bin/bash -e {0}
 
       - name: Run Gradle Tests
