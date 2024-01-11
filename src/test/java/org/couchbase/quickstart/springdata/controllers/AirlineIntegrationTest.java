@@ -17,6 +17,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.couchbase.client.core.error.DocumentNotFoundException;
 
@@ -43,10 +44,10 @@ class AirlineIntegrationTest {
                         if (airlineService.getAirlineById(airlineId).isPresent()) {
                                 restTemplate.delete(baseUri + "/api/v1/airline/" + airlineId);
                         }
-                } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
-                        log.error("Document not found");
+                } catch (DocumentNotFoundException | DataRetrievalFailureException | ResourceAccessException e) {
+                        log.warn("Document " + airlineId + " not present prior to test");
                 } catch (Exception e) {
-                        log.error("Error deleting test data");
+                        log.error("Error deleting test data", e.getMessage());
                 }
         }
 
@@ -69,14 +70,12 @@ class AirlineIntegrationTest {
         @BeforeEach
         void setUp() {
                 String baseUri = getBaseUri();
-                log.info("baseUri: " + baseUri);
                 deleteTestAirlineData(baseUri);
         }
 
         @AfterEach
         void tearDown() {
                 String baseUri = getBaseUri();
-                log.info("baseUri: " + baseUri);
                 deleteTestAirlineData(baseUri);
         }
 
