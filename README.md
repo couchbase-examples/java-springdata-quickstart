@@ -1,58 +1,75 @@
-[![Try it now!](https://da-demo-images.s3.amazonaws.com/runItNow_outline.png?couchbase-example=java-springdata-quickstart-repo&source=github)](https://gitpod.io/#https://github.com/couchbase-examples/java-springdata-quickstart)
+# Quickstart in Couchbase with Spring Data and Java
 
-## Overview
-This quickstart tutorial will review the basics of using Couchbase by building a simple Spring Data REST API that stores user profiles is used as an example.
+#### REST API using Couchbase Capella in Java using Spring Data
 
-## What We'll Cover
-- [Cluster Connection Configuration](#cluster-connection-configuration) – Configuring Spring Data to connect to a Couchbase cluster.
-- [Database Initialization](#database-initialization) – Creating required database structures upon application startup
-- [CRUD operations](#create-or-update-a-profile) – Standard create, update and delete operations.
-- [Custom SQL++ queries](#search-profiles-by-text) – Using [SQl++](https://www.couchbase.com/sqlplusplus) with Spring Data.
+Often, the first step developers take after creating their database is to create a REST API that can perform Create, Read, Update, and Delete (CRUD) operations for that database. This repo is designed to teach you and give you a starter project (in Java using Spring Data) to generate such a REST API. After you have installed the travel-sample bucket in your database, you can run this application which is a REST API with Swagger documentation so that you can learn:
 
-## Useful Links
-- [Spring Data Couchbase - Reference Documentation](https://docs.spring.io/spring-data/couchbase/docs/current/reference/html/)
-- [Spring Data Couchbase - JavaDoc](https://docs.spring.io/spring-data/couchbase/docs/current/api/)
+1. How to create, read, update, and delete documents using Key-Value[ operations](https://docs.couchbase.com/java-sdk/current/howtos/kv-operations.html) (KV operations). KV operations are unique to Couchbase and provide super fast (think microseconds) queries.
+2. How to write simple parametrized [N1QL queries](https://docs.couchbase.com/java-sdk/current/howtos/n1ql-queries-with-sdk.html) using the built-in travel-sample bucket.
+
+Full documentation for the tutorial can be found on the [Couchbase Developer Portal](https://developer.couchbase.com/tutorial-quickstart-spring-data-java/).
 
 ## Prerequisites
-To run this prebuild project, you will need:
-- [Couchbase Capella](https://docs.couchbase.com/cloud/get-started/create-account.html) account or locally installed [Couchbase Server](/tutorial-couchbase-installation-options)
-- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-- Code Editor or an Integrated Development Environment (e.g., [Eclipse](https://www.eclipse.org/ide/))
-- [Java SDK v1.8 or higher installed](https://www.oracle.com/java/technologies/ee8-install-guide.html)
-- [Gradle Build Tool](https://gradle.org/install/)
 
-## Source Code
-The sample source code used in this tutorial is [published on GitHub](https://github.com/couchbase-examples/java-springboot-quickstart).
-To obtain it, clone the git repository with your IDE or execute the following command:
+To run this prebuilt project, you will need:
+
+- [Couchbase Capella](https://www.couchbase.com/products/capella/) cluster with [travel-sample](https://docs.couchbase.com/java-sdk/current/ref/travel-app-data-model.html) bucket loaded.
+  - To run this tutorial using a self-managed Couchbase cluster, please refer to the [appendix](#running-self-managed-couchbase-cluster).
+- [Java 1.8 or higher](https://www.oracle.com/java/technologies/javase-downloads.html)
+  - Ensure that the Java version is compatible with the Couchbase SDK.
+- Loading Travel Sample Bucket
+  If travel-sample is not loaded in your Capella cluster, you can load it by following the instructions for your Capella Cluster:
+  - [Load travel-sample bucket in Couchbase Capella](https://docs.couchbase.com/cloud/clusters/data-service/import-data-documents.html#import-sample-data)
+- Gradle
+  - You can install Gradle using the [instructions](https://gradle.org/install/).
+## App Setup
+
+We will walk through the different steps required to get the application running.
+
+### Cloning Repo
+
 ```shell
-git clone https://github.com/couchbase-examples/java-springdata-quickstart
-```
-## Dependencies
-Gradle dependencies:
-```groovy
-implementation 'org.springframework.boot:spring-boot-starter-web'
-// spring data couchbase connector
-implementation 'org.springframework.boot:spring-boot-starter-data-couchbase'
-// swagger ui
-implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
+git clone https://github.com/couchbase-examples/java-springboot-quickstart
 ```
 
-Maven dependencies:
-```xml
-<dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-data-couchbase</artifactId>
-</dependency>
-<dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-web</artifactId>
-</dependency>
-<dependency>
-  <groupId>org.springdoc</groupId>
-  <artifactId>springdoc-openapi-ui</artifactId>
-  <version>1.6.6</version>
-</dependency>
+### Install Dependencies
+
+The dependencies for the application are specified in the `build.gradle` file in the source folder. Dependencies can be installed through `gradle` the default package manager for Java.
+
 ```
+gradle build -x test
+```
+
+Note: The `-x test` option is used to skip the tests. The tests require the application to be running.
+
+Note: The application is tested with Java 17. If you are using a different version of Java, please update the `build.gradle` file accordingly.
+
+### Setup Database Configuration
+
+To learn more about connecting to your Capella cluster, please follow the [instructions](https://docs.couchbase.com/cloud/get-started/connect.html).
+
+Specifically, you need to do the following:
+
+- Create the [database credentials](https://docs.couchbase.com/cloud/clusters/manage-database-users.html) to access the travel-sample bucket (Read and Write) used in the application.
+- [Allow access](https://docs.couchbase.com/cloud/clusters/allow-ip-address.html) to the Cluster from the IP on which the application is running.
+
+All configuration for communication with the database is read from the environment variables. We have provided a convenience feature in this quickstart to read the environment variables from a local file, `application.properties` in the `src/main/resources` folder.
+
+```properties
+server.use-forward-headers=true
+server.forward-headers-strategy=framework
+spring.couchbase.bootstrap-hosts=DB_CONN_STR
+spring.couchbase.bucket.name=travel-sample
+spring.couchbase.bucket.user=DB_USERNAME
+spring.couchbase.bucket.password=DB_PASSWORD
+spring.couchbase.scope.name=inventory
+spring.mvc.pathmatch.matching-strategy=ANT_PATH_MATCHER
+```
+
+Instead of the hash symbols, you need to add the values for the Couchbase connection.
+
+> Note: The connection string expects the `couchbases://` or `couchbase://` part.
+
 
 ## Cluster Connection Configuration
 Spring Data couchbase connector can be configured by providing a `@Configuration` [bean](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-definition) that extends [`AbstractCouchbaseConfiguration`](https://docs.spring.io/spring-data/couchbase/docs/current/api/org/springframework/data/couchbase/config/AbstractCouchbaseConfiguration.html).
@@ -93,160 +110,164 @@ This default configuration assumes that you have a locally running Couchbae serv
 Applications deployed to production or staging environments should use less privileged credentials created using [Role-Based Access Control](https://docs.couchbase.com/go-sdk/current/concept-docs/rbac.html).
 Please refer to [Managing Connections using the Java SDK with Couchbase Server](https://docs.couchbase.com/java-sdk/current/howtos/managing-connections.html) for more information on Capella and local cluster connections.
 
-# Running the Application
-
-To install dependencies and run the application on Linux, Unix or OS X, execute `./gradlew bootRun` (`./gradew.bat bootRun` on Windows).
-
-Once the site is up and running, you can launch your browser and go to the [Swagger Start Page](http://localhost:8080/swagger-ui/) to test the APIs.
-
-
-## Document Structure
-We will be setting up a REST API to manage demo user profiles and store them as documents on a Couchbase Cluster. Every document needs a unique identifier with which it can be addressed in the API. We will use auto-generated UUIDs for this purpose and store in profile documents the first and the last name of the user, their age, and address:
-
-```json
-{
-  "id": "b181551f-071a-4539-96a5-8a3fe8717faf",
-  "firstName": "John",
-  "lastName": "Doe",
-  "age": "35",
-  "address": "123 Main St"
-}
-```
-
 ## Let's Review the Code
 
-### Profile Model
-To work with submitted profiles, we first need to model their structure in a Java class, which would define the set of profile fields and their types.
-In our sample application, this is done in [`model/Profile.java`](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/trycb/model/Profile.java) class:
+### Airline Model
+
+The `Airline` model is a simple POJO (Plain Old Java Object) that is used to represent the airline document in the travel-sample bucket. The `@Id` annotation is used to specify the document ID in the bucket. The `@Field` annotation is used to specify the field name in the document. The `@TypeAlias` annotation is used to specify the type of the document in the bucket.
 
 ```java
-@Scope("_default")
-@Collection("profile")
-public class Profile {
-  @id
-  @GeneratedValue 
-  private UUID id;
-  private String firstName, lastName;
-  private byte age;
-  private String address;
+@Document
+@Scope("inventory")
+@Collection("airline")
+public class Airline {
 
-  // ...
-}
+  @Id
+  private String id;
+
+  @Field("callsign")
+  private String callsign;
+
+  @Field("country")
+  private String country;
+
+  @Field("iata")
+  private String iata;
+
+  @Field("icao")
+  private String icao;
+
+  @Field("name")
+  private String name;
+
+  @Field("type")
+  private String type;
+
+  @Field("active")
+  private boolean active;
+
+  ...
 ```
-> from `model/Profile.java`
+> *from model/Airline.java*
 
-The whole model is annotated with `@Scope` and `@Collection` annotations, which configure Spring Data to store model instances into `profile` collection in the default scope.
+The `@Document` annotation is used to specify that this class is a document in the bucket. The `@Scope` annotation is used to specify the scope of the document. The `@Collection` annotation is used to specify the collection of the document.
 
-It is also worth noting the use of `@Id` and `@GeneratedValue` annotations on `Profile::id` field.
-
-In couchbase, data is stored as JSON documents; each document has a unique identifier that can be used to address that document. 
-Every profile instance in our example corresponds to a single document and this annotation is used here to link the document's id to a java field. 
-Additionally, the `@GeneratedValue` annotation on the field instructs Spring Data to generate a random UUID if we try to store a profile without one, which will come in handy later.
+The `@Id` annotation is used to specify the document ID in the bucket. The `@Field` annotation is used to specify the field name in the document. The `@TypeAlias` annotation is used to specify the type of the document in the bucket.
 
 You can find more information on key generation in the [Connector Documentation](https://docs.spring.io/spring-data/couchbase/docs/current/reference/html/#couchbase.autokeygeneration).
 
 Couchbase Spring Data connector will automatically serialize model instances into JSON when storing them on the cluster.
 
-### Database initialization
-Automated database initialization and migration is a common solution that simplifies database management operations.
-To keep it simple, our demo uses [DbSetupRunner](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/trycb/config/DbSetupRunner.java) component class that implements `CommandLineRunner` interface and is invoked every time the application starts.
-The runner tries to create required structure every startup but ignores any errors if such structure already exists.
-For example, this code creates a primary index for configured bucket:
-```java
-    try {
-      // We must create primary index on our bucket in order to query it
-      cluster.queryIndexes().createPrimaryIndex(config.getBucketName());
-      LOGGER.info("Created primary index {}", config.getBucketName());
-    } catch (IndexExistsException iee) {
-      LOGGER.info("Primary index {} already exists", config.getBucketName());
-    }
-```
-> From `config/DbSetupRunner.java`
+## Document Structure
 
-Primary indexes in Couchbase contain all document keys and are used to fetch documents by their unique identifiers. 
-Secondary indexes can be used to efficiently query documents by their properties.
-For example, `DbSetupRunner` creates additional indexes on the collection that allow querying profiles by first or last names or addresses:
-```java
-    try {
-      final String query = "CREATE INDEX secondary_profile_index ON " + config.getBucketName() + "._default." + CouchbaseConfiguration.PROFILE_COLLECTION + "(firstName, lastName, address)";
-      cluster.query(query);
-    } catch (IndexExistsException e) {
-      LOGGER.info("Secondary index exists on collection {}", CouchbaseConfiguration.PROFILE_COLLECTION);
-    }
-```
-> From `config/DbSetupRunner.java`
+The `Airline` document is stored in the `airline` collection in the `travel-sample` bucket. The document has the following structure:
 
-More information on working with Couchbase indexes can be found [in our documentation](https://docs.couchbase.com/server/current/learn/services-and-indexes/indexes/global-secondary-indexes.html).
-
-### Create or update a Profile
-For CRUD operations, we will extend [`PagingAndSortingRepository`](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/repository/PagingAndSortingRepository.html) provided by the framework:
-
-```java
-@Repository
-public interface ProfileRepository extends PagingAndSortingRepository<Profile, UUID> {
-  @Query("#{#n1ql.selectEntity} WHERE firstName LIKE '%' || $1 || '%' OR lastName LIKE '%' || $1 || '%' OR address LIKE '%' || $1 || '%' OFFSET $2 * $3 LIMIT $3")
-  List<Profile> findByText(String query, int pageNum, int pageSize);
-
-  Page<Profile> findByAge(byte age, Pageable pageable);
+```json
+{
+  "callsign": "AMERICAN",
+  "country": "United States",
+  "iata": "AA",
+  "icao": "AAL",
+  "id": 10,
+  "name": "American Airlines",
+  "type": "airline",
+  "active": true
 }
 ```
-> From `repository/ProfileRepository.java`
 
-Open the [`ProfileController`](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/trycb/controller/ProfileController.java) class located in `controller` package and navigate to the `saveProfile` method.
-This method accepts `Profile` objects deserialized by Spring Web from the body of an HTTP request.
 
-```java
-  @PostMapping("/profile")
-  public ResponseEntity<Profile> saveProfile(@RequestBody Profile profile) {
-    // the same endpoint can be used to create and save the object
-    profile = profileRepository.save(profile);
-    return ResponseEntity.status(HttpStatus.CREATED).body(profile);
-  }
-```
-> *from `saveProfile` method of `controller/ProfileController.java`*
+## Running The Application
 
-This object can be modified according to business requirements and then saved directly into the database using `ProfileRepository::save` method.
-Because we used `@GeneratedValue` annotation on `id` field of our java model, Spring Data will automatically generate a document id when it is missing from the request. This allows clients to use `/profile` endpoint both to update existing profiles and create new records.
-To achieve this, a client needs to submit a Profile object without the id field.
+### Directly on Machine
 
-### Get Profile by Key
-Navigate to the `getProfileById` method in [`ProfileController`](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/trycb/controller/ProfileController.java) class.
-This method handles client requests to retrieve a single profile by its unique id.
-Sent by the client UUID is passed to the standard `findById` method of `ProfileRepository`, which returns an `Optional` with requested profile:
+At this point, we have installed the dependencies, loaded the travel-sample data and configured the application with the credentials. The application is now ready and you can run it.
 
-```java
-Profile result = profileRepository.findById(id).orElse(null);
-```
-> *from getProfileById method of controller/ProfileController.java*
-
-### Search profiles by text
-Although Couchbase provides [powerful full-text search capabilities out of the box](https://www.couchbase.com/products/full-text-search), in this demo we use classic `LIKE` query for our profile search endpoint.
-Navigate to `listProfiles` method of [Profile Controller](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/trycb/controller/ProfileController.java). 
-The endpoint uses customized `findByText` method of [Profile Repository](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/trycb/repository/ProfileRepository.java):
-```java
-result = profileRepository.findByText(query, pageRequest).toList();
-```
-> *from `listProfiles` method in `controller/ProfileController.java`*
-
-The `ProfileRepository::findByQueryMethod` is generated automatically using provided in `@Query` annotation [SpEL](https://docs.spring.io/spring-integration/docs/5.3.0.RELEASE/reference/html/spel.html) template in SQL++:
-```java
-  @Query("#{#n1ql.selectEntity} WHERE firstName LIKE '%' || $1 || '%' OR lastName LIKE '%' || $1 || '%' OR address LIKE '%' || $1 || '%'")
-  Page<Profile> findByQuery(String query, Pageable pageable);
-```
-> *definition of `findByQuery` method in `repository/ProfileRepository.java`*
-
-You can find out more about SQL++ in Spring Data in the [connector documentation](https://docs.spring.io/spring-data/couchbase/docs/current/reference/html/#couchbase.repository.querying).
-
-### DELETE Profile
-Navigate to the `deleteProfile` method in the [Profile Controller](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/trycb/controller/ProfileController.java).
-We only need the `Key` or id from the user to remove a document using a basic key-value operation.
-
-```java
-      profileRepository.deleteById(id);
+```sh
+gradle bootRun
 ```
 
-> *from `deleteProfile` method of controller/ProfileController.java*
+Note: If you're using Windows, you can run the application using the `gradle.bat` executable.
 
+```sh
+./gradew.bat bootRun
+```
+
+### Using Docker
+
+Build the Docker image
+
+```sh
+docker build -t java-springdata-quickstart .
+```
+
+Run the Docker image
+
+```sh
+docker run -d --name springdata-container -p 8080:8080 java-springdata-quickstart
+```
+
+Note: The `application.properties` file has the connection information to connect to your Capella cluster. These will be part of the environment variables in the Docker container.
+
+### Verifying the Application
+
+Once the application starts, you can see the details of the application on the logs.
+
+![Application Startup](app_startup.png)
+
+The application will run on port 8080 of your local machine (http://localhost:8080). You will find the interactive Swagger documentation of the API if you go to the URL in your browser. Swagger documentation is used in this demo to showcase the different API endpoints and how they can be invoked. More details on the Swagger documentation can be found in the [appendix](#swagger-documentation).
+
+![Swagger Documentation](swagger_documentation.png)
+
+## Running Tests
+
+To run the integration tests, use the following commands:
+
+```sh
+gradle test
+```
+
+## Appendix
+
+### Data Model
+
+For this quickstart, we use three collections, `airport`, `airline` and `routes` that contain sample airports, airlines and airline routes respectively. The routes collection connects the airports and airlines as seen in the figure below. We use these connections in the quickstart to generate airports that are directly connected and airlines connecting to a destination airport. Note that these are just examples to highlight how you can use SQL++ queries to join the collections.
+
+![travel-sample data model](travel_sample_data_model.png)
+
+### Extending API by Adding New Entity
+
+If you would like to add another entity to the APIs, these are the steps to follow:
+
+- Create the new entity (collection) in the Couchbase bucket. You can create the collection using the [SDK](https://docs.couchbase.com/sdk-api/couchbase-java-client-3.5.2/com/couchbase/client/java/Collection.html#createScope-java.lang.String-) or via the [Couchbase Server interface](https://docs.couchbase.com/cloud/n1ql/n1ql-language-reference/createcollection.html).
+- Define the routes in a new file in the `controllers` folder similar to the existing routes like `AirportController.java`.
+- Define the service in a new file in the `services` folder similar to the existing services like `AirportService.java`. 
+- Define the repository in a new file in the `repositories` folder similar to the existing repositories like `AirportRepository.java`.
+
+### Running Self-Managed Couchbase Cluster
+
+If you are running this quickstart with a self-managed Couchbase cluster, you need to [load](https://docs.couchbase.com/server/current/manage/manage-settings/install-sample-buckets.html) the travel-sample data bucket in your cluster and generate the credentials for the bucket.
+
+You need to update the connection string and the credentials in the `application.properties` file in the `src/main/resources` folder.
+
+Note: Couchbase Server version 7 or higher must be installed and running before running the Spring Boot Java app.
+
+### Swagger Documentation
+
+Swagger documentation provides a clear view of the API including endpoints, HTTP methods, request parameters, and response objects.
+
+Click on an individual endpoint to expand it and see detailed information. This includes the endpoint's description, possible response status codes, and the request parameters it accepts.
+
+#### Trying Out the API
+
+You can try out an API by clicking on the "Try it out" button next to the endpoints.
+
+- Parameters: If an endpoint requires parameters, Swagger UI provides input boxes for you to fill in. This could include path parameters, query strings, headers, or the body of a POST/PUT request.
+
+- Execution: Once you've inputted all the necessary parameters, you can click the "Execute" button to make a live API call. Swagger UI will send the request to the API and display the response directly in the documentation. This includes the response code, response headers, and response body.
+
+#### Models
+
+Swagger documents the structure of request and response bodies using models. These models define the expected data structure using JSON schema and are extremely helpful in understanding what data to send and expect.
 
 ## Conclusion
 Setting up a basic REST API in Spring Data with Couchbase is fairly simple.  This project, when run with Couchbase Server 7 installed creates a collection in Couchbase, an index for our parameterized [N1QL query](https://docs.couchbase.com/java-sdk/current/howtos/n1ql-queries-with-sdk.html), and showcases basic CRUD operations needed in most applications.
