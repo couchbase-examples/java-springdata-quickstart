@@ -19,6 +19,9 @@ import com.couchbase.client.java.query.QueryScanConsistency;
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
 public interface AirportRepository extends CouchbaseRepository<Airport, String> {
 
+    @Query("SELECT META(airport).id as __id,airport.* FROM airport")
+    Page<Airport> findAll(Pageable pageable);
+
     @Query("SELECT DISTINCT META(route).id as __id,route.* " +
             "FROM airport as airport " +
             "JOIN route as route ON airport.faa = route.sourceairport " +

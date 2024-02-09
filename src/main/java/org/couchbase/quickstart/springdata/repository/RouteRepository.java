@@ -3,7 +3,6 @@ package org.couchbase.quickstart.springdata.repository;
 import org.couchbase.quickstart.springdata.models.Route;
 import org.springframework.data.couchbase.repository.Collection;
 import org.springframework.data.couchbase.repository.CouchbaseRepository;
-import org.springframework.data.couchbase.repository.DynamicProxyable;
 import org.springframework.data.couchbase.repository.Query;
 import org.springframework.data.couchbase.repository.ScanConsistency;
 import org.springframework.data.couchbase.repository.Scope;
@@ -17,6 +16,9 @@ import com.couchbase.client.java.query.QueryScanConsistency;
 @Collection("route")
 @Repository
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
-public interface RouteRepository extends CouchbaseRepository<Route, String>, DynamicProxyable<RouteRepository> {
+public interface RouteRepository extends CouchbaseRepository<Route, String> {
+
+    @Query("SELECT META(route).id as __id,route.* FROM route")
+    Page<Route> findAll(Pageable pageable);
 
 }
