@@ -19,6 +19,4 @@ import com.couchbase.client.java.query.QueryScanConsistency;
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
 public interface RouteRepository extends CouchbaseRepository<Route, String>, DynamicProxyable<RouteRepository> {
 
-    @Query("#{#n1ql.selectEntity}")
-    Page<Route> findAll(Pageable pageable);
 }

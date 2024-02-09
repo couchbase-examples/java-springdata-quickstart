@@ -22,5 +22,8 @@ EXPOSE 8080
 # Run the application
 ENTRYPOINT ["java","-jar","/app/build/libs/java-springdata-quickstart-0.0.1-SNAPSHOT.jar"]
 
-# docker build -t java-springdata-quickstart . 
-# docker run -d --name springdata-container -p 9440:8080 java-springdata-quickstart
+# Build the image
+# docker build -t java-springdata-quickstart .
+
+# Run the container
+# docker run -d --name springdata-container -p 9440:8080 java-springdata-quickstart -e DB_CONN_STR=<connection_string> -e DB_USERNAME=<username> -e DB_PASSWORD=<password>

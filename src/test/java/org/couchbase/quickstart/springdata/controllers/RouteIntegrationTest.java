@@ -3,7 +3,6 @@ package org.couchbase.quickstart.springdata.controllers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.couchbase.quickstart.springdata.models.RestResponsePage;
 import org.couchbase.quickstart.springdata.models.Route;
@@ -33,7 +32,7 @@ class RouteIntegrationTest {
         @Value("${local.server.port}")
         private int port;
 
-        @Value("${spring.couchbase.bootstrap-hosts}")
+        @Value("#{systemEnvironment['DB_CONN_STR'] ?: '${spring.couchbase.bootstrap-hosts:localhost}'}")
         private String bootstrapHosts;
 
         @Autowired

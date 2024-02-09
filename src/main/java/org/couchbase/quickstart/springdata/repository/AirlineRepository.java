@@ -18,17 +18,15 @@ import com.couchbase.client.java.query.QueryScanConsistency;
 @ScanConsistency(query = QueryScanConsistency.REQUEST_PLUS)
 public interface AirlineRepository extends CouchbaseRepository<Airline, String> {
 
-    @Query("#{#n1ql.selectEntity}")
-    Page<Airline> findAll(Pageable pageable);
-
-    @Query("#{#n1ql.selectEntity} WHERE country = $1")
+    @Query("SELECT META(air).id AS __id, air.callsign, air.country, air.iata, air.icao, air.id, air.name, air.type " +
+            "FROM airline AS air WHERE air.country = $1")
     Page<Airline> findByCountry(String country, Pageable pageable);
 
     @Query("SELECT META(air).id AS __id, air.callsign, air.country, air.iata, air.icao, air.id, air.name, air.type " +
             "FROM (SELECT DISTINCT META(airline).id AS airlineId FROM route " +
             "JOIN airline ON route.airlineid = META(airline).id " +
             "WHERE route.destinationairport = $1) AS subquery " +
-            "JOIN #{#n1ql.bucket} AS air ON META(air).id = subquery.airlineId")
+            "JOIN airline AS air ON META(air).id = subquery.airlineId")
     Page<Airline> findByDestinationAirport(String destinationAirport, Pageable pageable);
 
 }

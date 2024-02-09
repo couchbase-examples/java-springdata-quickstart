@@ -3,20 +3,17 @@ package org.couchbase.quickstart.springdata.models;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.data.annotation.Id;
-import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.Field;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -57,7 +54,6 @@ public class Route implements Serializable {
     @NotNull(message = "Distance is mandatory")
     private Double distance;
 
-    @Document
     @AllArgsConstructor
     @NoArgsConstructor
     @Data

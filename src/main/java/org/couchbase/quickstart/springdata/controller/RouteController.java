@@ -2,7 +2,7 @@ package org.couchbase.quickstart.springdata.controller;
 
 import java.util.Optional;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.couchbase.quickstart.springdata.models.Route;
 import org.couchbase.quickstart.springdata.services.RouteService;
