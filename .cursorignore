@@ -1,7 +1,0 @@
-.gradle/
-.idea/
-build/
-target/
-.gitignore
-.dockerignore
-*.java

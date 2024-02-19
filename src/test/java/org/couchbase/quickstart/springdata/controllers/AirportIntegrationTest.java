@@ -83,15 +83,25 @@ class AirportIntegrationTest {
         @Test
         void testGetAirport() {
                 ResponseEntity<Airport> response = restTemplate
-                                .getForEntity("/api/v1/airport/airport_1254",
+                                .getForEntity("/api/v1/airport/airport_1255",
                                                 Airport.class);
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
                 Airport airport = response.getBody();
                 assert airport != null;
-                Airport expectedAirport = Airport.builder().id("airport_1254").type("airport")
-                                .airportName("Calais Dunkerque")
-                                .city("Calais").country("France").faa("CQF").icao("LFAC").tz("Europe/Paris")
-                                .geo(new Geo(14.0, 50.962097, 1.954764)).build();
+                Airport expectedAirport = Airport.builder()
+                                .id("airport_1255")
+                                .type("airport")
+                                .airportName("Peronne St Quentin")
+                                .city("Peronne")
+                                .country("France")
+                                .faa(null)
+                                .icao("LFAG").tz("Europe/Paris")
+                                .geo(Geo.builder()
+                                                .lat(49.868547)
+                                                .lon(3.029578)
+                                                .alt(295.0)
+                                                .build())
+                                .build();
                 assertThat(airport).isEqualTo(expectedAirport);
         }
 
