@@ -2,8 +2,6 @@ package org.couchbase.quickstart.springdata.controller;
 
 import java.util.Optional;
 
-import jakarta.validation.Valid;
-
 import org.couchbase.quickstart.springdata.models.Airport;
 import org.couchbase.quickstart.springdata.models.Route;
 import org.couchbase.quickstart.springdata.services.AirportService;
@@ -26,6 +24,10 @@ import com.couchbase.client.core.error.DocumentExistsException;
 import com.couchbase.client.core.error.DocumentNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -39,13 +41,15 @@ public class AirportController {
         this.airportService = airportService;
     }
 
-        // All Errors
-        private static final String INTERNAL_SERVER_ERROR = "Internal server error";
-        private static final String DOCUMENT_NOT_FOUND = "Document not found";
-        private static final String DOCUMENT_ALREADY_EXISTS = "Document already exists";
+    // All Errors
+    private static final String INTERNAL_SERVER_ERROR = "Internal server error";
+    private static final String DOCUMENT_NOT_FOUND = "Document not found";
+    private static final String DOCUMENT_ALREADY_EXISTS = "Document already exists";
 
-    @Operation(summary = "Get an airport by ID")
     @GetMapping("/{id}")
+    @Operation(summary = "Get an airport by ID", description = "Get Airport by specified ID.\n\nThis provides an example of using Key Value operations in Couchbase to retrieve a document with a specified ID. \n\n Code: [`controllers/AirportController.java`](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/org/couchbase/quickstart/springdata/controllers/AirportController.java) \n File: `AirportController.java` \n Method: `getAirport`", tags = {
+            "Airport" })
+    @Parameter(name = "id", description = "The ID of the airport to retrieve", required = true, example = "airport_1254")
     public ResponseEntity<Airport> getAirport(@PathVariable String id) {
         try {
             Optional<Airport> airport = airportService.getAirportById(id);
@@ -60,8 +64,15 @@ public class AirportController {
         }
     }
 
-    @Operation(summary = "Create an airport")
     @PostMapping("/{id}")
+    @Operation(summary = "Create an airport", description = "Create an airport with the specified ID.\n\nThis provides an example of using Key Value operations in Couchbase to create a document with a specified ID. \n\n Code: [`controllers/AirportController.java`](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/org/couchbase/quickstart/springdata/controllers/AirportController.java) \n File: `AirportController.java` \n Method: `createAirport`", tags = {
+            "Airport" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Airport created"),
+            @ApiResponse(responseCode = "409", description = "Airport already exists"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @Parameter(name = "id", description = "The ID of the airport to create", required = true, example = "airport_1254")
     public ResponseEntity<Airport> createAirport(@PathVariable String id, @Valid @RequestBody Airport airport) {
         try {
             Airport newAirport = airportService.createAirport(airport);
@@ -76,8 +87,15 @@ public class AirportController {
 
     }
 
-    @Operation(summary = "Update an airport")
     @PutMapping("/{id}")
+    @Operation(summary = "Update an airport", description = "Update an airport with the specified ID.\n\nThis provides an example of using Key Value operations in Couchbase to update a document with a specified ID. \n\n Code: [`controllers/AirportController.java`](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/org/couchbase/quickstart/springdata/controllers/AirportController.java) \n File: `AirportController.java` \n Method: `updateAirport`", tags = {
+            "Airport" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Airport updated"),
+            @ApiResponse(responseCode = "404", description = "Airport not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @Parameter(name = "id", description = "The ID of the airport to update", required = true, example = "airport_1254")
     public ResponseEntity<Airport> updateAirport(@PathVariable String id, @Valid @RequestBody Airport airport) {
         try {
             Airport updatedAirport = airportService.updateAirport(id, airport);
@@ -96,8 +114,15 @@ public class AirportController {
         }
     }
 
-    @Operation(summary = "Delete an airport")
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete an airport", description = "Delete an airport with the specified ID.\n\nThis provides an example of using Key Value operations in Couchbase to delete a document with a specified ID. \n\n Code: [`controllers/AirportController.java`](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/org/couchbase/quickstart/springdata/controllers/AirportController.java) \n File: `AirportController.java` \n Method: `deleteAirport`", tags = {
+            "Airport" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Airport deleted"),
+            @ApiResponse(responseCode = "404", description = "Airport not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @Parameter(name = "id", description = "The ID of the airport to delete", required = true, example = "airport_1254")
     public ResponseEntity<Void> deleteAirport(@PathVariable String id) {
         try {
             airportService.deleteAirport(id);
@@ -111,8 +136,13 @@ public class AirportController {
         }
     }
 
-    @Operation(summary = "List all airports")
     @GetMapping("/list")
+    @Operation(summary = "List all airports", description = "List all airports in the database.\n\nThis provides an example of using N1QL to query all documents in a bucket. \n\n Code: [`controllers/AirportController.java`](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/org/couchbase/quickstart/springdata/controllers/AirportController.java) \n File: `AirportController.java` \n Method: `listAirports`", tags = {
+            "Airport" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of airports"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<Page<Airport>> listAirports(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
@@ -124,10 +154,16 @@ public class AirportController {
         }
     }
 
-    @Operation(summary = "List of direct connections to an airport")
-    @GetMapping("/direct-connections/{airportCode}")
+    @GetMapping("/direct-connections")
+    @Operation(summary = "List of direct connections to an airport", description = "List of direct connections to an airport.\n\nThis provides an example of using N1QL to query all documents in a bucket. \n\n Code: [`controllers/AirportController.java`](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/org/couchbase/quickstart/springdata/controllers/AirportController.java) \n File: `AirportController.java` \n Method: `listDirectConnections`", tags = {
+            "Airport" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of direct connections"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @Parameter(name = "airportCode", description = "The airport code to list direct connections", required = true, example = "SFO")
     public ResponseEntity<Page<String>> listDirectConnections(
-            @PathVariable String airportCode,
+            @RequestParam(required = true) String airportCode,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {

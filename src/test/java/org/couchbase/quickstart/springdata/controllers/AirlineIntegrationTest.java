@@ -181,14 +181,13 @@ class AirlineIntegrationTest {
 
         @Test
         void testListAirlinesByCountry() {
-                // Check that if it contains
-                // airline_10226{"id":10226,"type":"airline","name":"Atifly","iata":"A1","icao":"A1F","callsign":"atifly","country":"United
-                // States"}
+
                 String country = "United States";
                 ResponseEntity<RestResponsePage<Airline>> response = restTemplate.exchange(
-                                "/api/v1/airline/country/" + country,
+                                "/api/v1/airline/list?country=" + country,
                                 HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
                                 });
+
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
                 RestResponsePage<Airline> airlines = response.getBody();
@@ -209,14 +208,12 @@ class AirlineIntegrationTest {
                                 .build();
                 assertThat(airline).isEqualTo(expectedAirline);
 
-                // {"id":1191,"type":"airline","name":"Air
-                // Austral","iata":"UU","icao":"REU","callsign":"REUNION","country":"France"}
-
                 country = "France";
                 ResponseEntity<RestResponsePage<Airline>> response2 = restTemplate.exchange(
-                                "/api/v1/airline/country/" + country,
+                                "/api/v1/airline/list?country=" + country,
                                 HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
                                 });
+
                 assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
 
                 RestResponsePage<Airline> airlines2 = response2.getBody();
@@ -239,10 +236,9 @@ class AirlineIntegrationTest {
 
         @Test
         void testListAirlinesByDestinationAirport() {
-
                 String airport = "LAX";
                 ResponseEntity<RestResponsePage<Airline>> response = restTemplate.exchange(
-                                "/api/v1/airline/destination/" + airport,
+                                "/api/v1/airline/to-airport?destinationAirport=" + airport,
                                 HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
                                 });
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -266,7 +262,7 @@ class AirlineIntegrationTest {
 
                 airport = "CDG";
                 ResponseEntity<RestResponsePage<Airline>> response2 = restTemplate.exchange(
-                                "/api/v1/airline/destination/" + airport,
+                                "/api/v1/airline/to-airport?destinationAirport=" + airport,
                                 HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<Airline>>() {
                                 });
 

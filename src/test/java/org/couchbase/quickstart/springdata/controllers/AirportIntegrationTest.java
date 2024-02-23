@@ -169,9 +169,10 @@ class AirportIntegrationTest {
         void testListDirectConnections() {
                 String airportCode = "LAX";
                 ResponseEntity<RestResponsePage<String>> response = restTemplate.exchange(
-                                "/api/v1/airport/direct-connections/" + airportCode,
+                                "/api/v1/airport/direct-connections?airportCode=" + airportCode + "&page=0&size=10",
                                 HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<String>>() {
                                 });
+
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
                 RestResponsePage<String> directConnections = response.getBody();
@@ -182,7 +183,7 @@ class AirportIntegrationTest {
 
                 airportCode = "JFK";
                 response = restTemplate.exchange(
-                                "/api/v1/airport/direct-connections/" + airportCode,
+                                "/api/v1/airport/direct-connections?airportCode=" + airportCode + "&page=0&size=10",
                                 HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<String>>() {
                                 });
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

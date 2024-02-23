@@ -5,7 +5,7 @@
 Often, the first step developers take after creating their database is to create a REST API that can perform Create, Read, Update, and Delete (CRUD) operations for that database. This repo is designed to teach you and give you a starter project (in Java using Spring Data) to generate such a REST API. After you have installed the travel-sample bucket in your database, you can run this application which is a REST API with Swagger documentation so that you can learn:
 
 1. How to create, read, update, and delete documents using Key-Value[ operations](https://docs.couchbase.com/java-sdk/current/howtos/kv-operations.html) (KV operations). KV operations are unique to Couchbase and provide super fast (think microseconds) queries.
-2. How to write simple parametrized [N1QL queries](https://docs.couchbase.com/java-sdk/current/howtos/n1ql-queries-with-sdk.html) using the built-in travel-sample bucket.
+2. How to write simple parametrized [SQL++ Queries](https://docs.couchbase.com/java-sdk/current/howtos/n1ql-queries-with-sdk.html) using the built-in travel-sample bucket.
 
 Full documentation for the tutorial can be found on the [Couchbase Developer Portal](https://developer.couchbase.com/tutorial-quickstart-spring-data-java/).
 
@@ -17,11 +17,10 @@ To run this prebuilt project, you will need:
   - To run this tutorial using a self-managed Couchbase cluster, please refer to the [appendix](#running-self-managed-couchbase-cluster).
 - [Java 17 or higher](https://www.oracle.com/java/technologies/javase-downloads.html)
   - Ensure that the Java version is compatible with the Couchbase SDK.
-- Loading Travel Sample Bucket
-  If travel-sample is not loaded in your Capella cluster, you can load it by following the instructions for your Capella Cluster:
-  - [Load travel-sample bucket in Couchbase Capella](https://docs.couchbase.com/cloud/clusters/data-service/import-data-documents.html#import-sample-data)
-- Gradle
-  - You can install Gradle using the [instructions](https://gradle.org/install/).
+- [Loading Travel Sample Bucket](https://docs.couchbase.com/cloud/clusters/data-service/import-data-documents.html#import-sample-data)
+  - If `travel-sample` is not loaded in your Capella cluster, you can load it by following the instructions for your Capella Cluster
+- [Gradle 8.6 or higher](https://gradle.org/releases/)
+
 ## App Setup
 
 We will walk through the different steps required to get the application running.
@@ -55,22 +54,33 @@ Specifically, you need to do the following:
 
 All configuration for communication with the database is read from the environment variables. We have provided a convenience feature in this quickstart to read the environment variables from a local file, `application.properties` in the `src/main/resources` folder.
 
+You can also set the environment variables directly in your environment such as:
+
+```sh
+export DB_CONN_STR=couchbases://<cluster-url>
+export DB_USERNAME=Administrator
+export DB_PASSWORD=password
+```
+
+The `application.properties` file should look like this:
+
 ```properties
-server.use-forward-headers=true
 server.forward-headers-strategy=framework
 spring.couchbase.bootstrap-hosts=DB_CONN_STR
 spring.couchbase.bucket.name=travel-sample
 spring.couchbase.bucket.user=DB_USERNAME
 spring.couchbase.bucket.password=DB_PASSWORD
 spring.couchbase.scope.name=inventory
-spring.mvc.pathmatch.matching-strategy=ANT_PATH_MATCHER
 ```
-Instead of DB_CONN_STR, DB_USERNAME, and DB_PASSWORD, you should replace these with the connection string, username, and password for your Couchbase cluster. The connection string is the URL of your cluster. For example, if you are using Capella, the connection string will look like `couchbases://cb.jnym5s9gv4ealbe.cloud.couchbase.com`. If you are using a local cluster, the connection string will be `localhost`.
+
+You can specify the connection string, username, and password using environment variables. The application will read these environment variables and use them to connect to the database.
+
+Additionally, you can specify the connection string, username, and password directly in the `application.properties` file.
 
 > Note: The connection string expects the `couchbases://` or `couchbase://` part.
 
-
 ## Cluster Connection Configuration
+
 Spring Data couchbase connector can be configured by providing a `@Configuration` [bean](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-definition) that extends [`AbstractCouchbaseConfiguration`](https://docs.spring.io/spring-data/couchbase/docs/current/api/org/springframework/data/couchbase/config/AbstractCouchbaseConfiguration.html).
 
 ```java
@@ -144,7 +154,8 @@ public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
 
 }
 ```
-> *from config/CouchbaseConfiguration.java*
+
+> _from config/CouchbaseConfiguration.java_
 
 This default configuration assumes that you have a locally running Couchbae server and uses standard administrative login and password for demonstration purpose.
 Applications deployed to production or staging environments should use less privileged credentials created using [Role-Based Access Control](https://docs.couchbase.com/go-sdk/current/concept-docs/rbac.html).
@@ -212,10 +223,11 @@ For this quickstart, we use three collections, `airport`, `airline` and `routes`
 
 If you would like to add another entity to the APIs, these are the steps to follow:
 
-- Create the new entity (collection) in the Couchbase bucket. You can create the collection using the [SDK](https://docs.couchbase.com/sdk-api/couchbase-java-client-3.5.2/com/couchbase/client/java/Collection.html#createScope-java.lang.String-) or via the [Couchbase Server interface](https://docs.couchbase.com/cloud/n1ql/n1ql-language-reference/createcollection.html).
-- Define the routes in a new file in the `controllers` folder similar to the existing routes like `AirportController.java`.
-- Define the service in a new file in the `services` folder similar to the existing services like `AirportService.java`. 
-- Define the repository in a new file in the `repositories` folder similar to the existing repositories like `AirportRepository.java`.
+- You can create the collection using the [SDK](https://docs.couchbase.com/sdk-api/couchbase-java-client-3.5.2/com/couchbase/client/java/Collection.html#createScope-java.lang.String-) or via the [Couchbase Server interface](https://docs.couchbase.com/cloud/n1ql/n1ql-language-reference/createcollection.html).
+- Create a new entity class in the `models` package similar to the existing entity classes like `Airport.java`.
+- Define the controller in a new file in the `controllers` folder similar to the existing classes like `AirportController.java`.
+- Define the service in a new file in the `services` folder similar to the existing classes like `AirportService.java`.
+- Define the repository in a new file in the `repositories` folder similar to the existing classes like `AirportRepository.java`.
 
 ### Running Self-Managed Couchbase Cluster
 
