@@ -1,5 +1,17 @@
+*.iml
+
 .gradle
-/build/
+build/
+target/
+out/
+.vscode/
+
+# Default ignored files
+shelf/
+.idea/
+/workspace.xml
+.idea_modules/
+sonarlint/
 
 # Ignore Gradle GUI config
 gradle-app.setting

@@ -1,29 +1,50 @@
 name: Tests
+
 on:
   push:
-    workflow_dispatch:
-    schedule:
-    - cron: "0 0 * * 0"
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 */6 * * *"
+
 jobs:
   run_tests:
     name: Run Tests
     runs-on: ubuntu-latest
+    env:
+      DB_CONN_STR: ${{ vars.DB_CONN_STR }}
+      DB_USERNAME: ${{ vars.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+    strategy:
+      matrix:
+        java-version: ["17", "21"]
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
-        with:
-          java-version: 17
-          distribution: 'adopt'
-          cache: gradle
-      - id: run
+      - name: Update repositories
         run: |
-          ./gradlew --no-daemon test
+          sudo apt update || echo "apt-update failed" # && apt -y upgrade
+
+      - name: Checkout ${{ github.event.repository.name }}
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: "adopt"
+          cache: "gradle"
+
+      - name: Run Gradle Tests
+        id: run
+        run: |
+          chmod +x gradlew
+          ./gradlew clean test --info --stacktrace
+
       - name: Report Status
         if: always()
         uses: ravsamhq/notify-slack-action@v1
         with:
           status: ${{ job.status }}
-          notify_when: 'failure'
+          notify_when: "failure"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
