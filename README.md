@@ -5,9 +5,11 @@
 Often, the first step developers take after creating their database is to create a REST API that can perform Create, Read, Update, and Delete (CRUD) operations for that database. This repo is designed to teach you and give you a starter project (in Java using Spring Data) to generate such a REST API. After you have installed the travel-sample bucket in your database, you can run this application which is a REST API with Swagger documentation so that you can learn:
 
 1. How to create, read, update, and delete documents using Key-Value[ operations](https://docs.couchbase.com/java-sdk/current/howtos/kv-operations.html) (KV operations). KV operations are unique to Couchbase and provide super fast (think microseconds) queries.
-2. How to write simple parametrized [SQL++ Queries](https://docs.couchbase.com/java-sdk/current/howtos/n1ql-queries-with-sdk.html) using the built-in travel-sample bucket.
+2. How to write simple parameterized [SQL++ Queries](https://docs.couchbase.com/java-sdk/current/howtos/n1ql-queries-with-sdk.html) using the built-in travel-sample bucket.
 
 Full documentation for the tutorial can be found on the [Couchbase Developer Portal](https://developer.couchbase.com/tutorial-quickstart-spring-data-java/).
+
+This example uses spring data, however, if you are looking for springboot sample app please go to this [repository](https://github.com/couchbase-examples/java-springboot-quickstart).
 
 ## Prerequisites
 
@@ -28,7 +30,7 @@ We will walk through the different steps required to get the application running
 ### Cloning Repo
 
 ```shell
-git clone https://github.com/couchbase-examples/java-springboot-quickstart
+git clone https://github.com/couchbase-examples/java-springdata-quickstart.git
 ```
 
 ### Install Dependencies
@@ -81,7 +83,7 @@ Additionally, you can specify the connection string, username, and password dire
 
 ## Cluster Connection Configuration
 
-Spring Data couchbase connector can be configured by providing a `@Configuration` [bean](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-definition) that extends [`AbstractCouchbaseConfiguration`](https://docs.spring.io/spring-data/couchbase/docs/current/api/org/springframework/data/couchbase/config/AbstractCouchbaseConfiguration.html).
+Spring Data Couchbase connector can be configured by providing a `@Configuration` [bean](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-definition) that extends [`AbstractCouchbaseConfiguration`](https://docs.spring.io/spring-data/couchbase/docs/current/api/org/springframework/data/couchbase/config/AbstractCouchbaseConfiguration.html).
 
 ```java
 @Slf4j
@@ -157,7 +159,7 @@ public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
 
 > _from config/CouchbaseConfiguration.java_
 
-This default configuration assumes that you have a locally running Couchbae server and uses standard administrative login and password for demonstration purpose.
+This default configuration assumes that you have a locally running Couchbae server and use a standard administrative login and password for demonstration purposes.
 Applications deployed to production or staging environments should use less privileged credentials created using [Role-Based Access Control](https://docs.couchbase.com/go-sdk/current/concept-docs/rbac.html).
 Please refer to [Managing Connections using the Java SDK with Couchbase Server](https://docs.couchbase.com/java-sdk/current/howtos/managing-connections.html) for more information on Capella and local cluster connections.
 
