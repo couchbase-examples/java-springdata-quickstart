@@ -18,17 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 @EnableCouchbaseRepositories
 public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
 
-  @Value("#{systemEnvironment['DB_CONN_STR'] ?: '${spring.couchbase.bootstrap-hosts:localhost}'}")
+  @Value("#{systemEnvironment['DB_CONN_STR'] ?: '${spring.couchbase.connection-string:localhost}'}")
   private String host;
 
-  @Value("#{systemEnvironment['DB_USERNAME'] ?: '${spring.couchbase.bucket.user:Administrator}'}")
+  @Value("#{systemEnvironment['DB_USERNAME'] ?: '${spring.couchbase.username:Administrator}'}")
   private String username;
 
-  @Value("#{systemEnvironment['DB_PASSWORD'] ?: '${spring.couchbase.bucket.password:password}'}")
+  @Value("#{systemEnvironment['DB_PASSWORD'] ?: '${spring.couchbase.password:password}'}")
   private String password;
 
-  @Value("${spring.couchbase.bucket.name:travel-sample}")
-  private String bucketName;
+  // Since bucket auto-configuration is removed, we'll hardcode the travel-sample bucket name
+  private String bucketName = "travel-sample";
 
   @Override
   public String getConnectionString() {
