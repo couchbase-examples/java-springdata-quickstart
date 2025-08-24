@@ -47,7 +47,7 @@ class AirlineIntegrationTest {
                 } catch (DocumentNotFoundException | DataRetrievalFailureException | ResourceAccessException e) {
                         log.warn("Document " + airlineId + " not present prior to test");
                 } catch (Exception e) {
-                        log.error("Error deleting test data for airline {}: {}", airlineId, e.getMessage());
+                        log.debug("Cleanup: Could not delete test airline {}: {} (this is expected during test cleanup)", airlineId, e.getMessage());
                         // Continue with cleanup even if one deletion fails
                 }
         }

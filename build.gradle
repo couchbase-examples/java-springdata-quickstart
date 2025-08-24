@@ -24,7 +24,6 @@ dependencies {
 	implementation 'org.springframework.data:spring-data-couchbase'
 	implementation 'org.springframework.boot:spring-boot-devtools'
 	
-	implementation 'jakarta.persistence:jakarta.persistence-api'
     implementation 'jakarta.servlet:jakarta.servlet-api'
     
     // Environment variable loading from .env file
