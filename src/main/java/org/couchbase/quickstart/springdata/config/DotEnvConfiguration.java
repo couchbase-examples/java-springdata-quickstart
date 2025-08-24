@@ -1,6 +1,8 @@
 package org.couchbase.quickstart.springdata.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -10,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DotEnvConfiguration implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+    private static final Logger log = LoggerFactory.getLogger(DotEnvConfiguration.class);
 
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -32,17 +36,17 @@ public class DotEnvConfiguration implements ApplicationContextInitializer<Config
                 // Only add if not already set by system environment
                 if (System.getenv(key) == null) {
                     envMap.put(key, value);
-                    System.out.println("Loaded from .env: " + key);
+                    log.debug("Loaded from .env: {}", key);
                 }
             });
             
             if (!envMap.isEmpty()) {
                 environment.getPropertySources().addFirst(new MapPropertySource("dotenv", envMap));
-                System.out.println("Environment variables loaded from .env file: " + envMap.keySet());
+                log.info("Environment variables loaded from .env file: {}", envMap.keySet());
             }
             
         } catch (Exception e) {
-            System.err.println("Could not load .env file: " + e.getMessage());
+            log.error("Could not load .env file", e);
         }
     }
 }
