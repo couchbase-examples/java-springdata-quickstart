@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.couchbase.quickstart.springdata.models.Airport;
 import org.couchbase.quickstart.springdata.models.Airport.Geo;
 import org.couchbase.quickstart.springdata.models.RestResponsePage;
+import org.couchbase.quickstart.springdata.models.RestResponseSlice;
 import org.couchbase.quickstart.springdata.services.AirportService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,9 +47,10 @@ class AirportIntegrationTest {
                                 restTemplate.delete(baseUri + "/api/v1/airport/" + airportId);
                         }
                 } catch (DocumentNotFoundException | DataRetrievalFailureException | ResourceAccessException e) {
-                        log.warn("Document " + airportId + " not present prior to test");
+                        log.warn("Document {} not present prior to test", airportId);
                 } catch (Exception e) {
-                        log.error("Error deleting test data", e.getMessage());
+                        log.error("Error deleting test data for airport {}: {}", airportId, e.getMessage());
+                        // Continue with cleanup even if one deletion fails
                 }
         }
 
@@ -168,14 +170,14 @@ class AirportIntegrationTest {
         @Test
         void testListDirectConnections() {
                 String airportCode = "LAX";
-                ResponseEntity<RestResponsePage<String>> response = restTemplate.exchange(
+                ResponseEntity<RestResponseSlice<String>> response = restTemplate.exchange(
                                 "/api/v1/airport/direct-connections?airportCode=" + airportCode + "&page=0&size=10",
-                                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<String>>() {
+                                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponseSlice<String>>() {
                                 });
 
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-                RestResponsePage<String> directConnections = response.getBody();
+                RestResponseSlice<String> directConnections = response.getBody();
 
                 assertThat(directConnections).isNotNull().hasSize(10);
                 assertThat(directConnections).contains("NRT", "CUN", "GDL", "HMO", "MEX", "MZT", "PVR", "SJD", "ZIH",
@@ -184,7 +186,7 @@ class AirportIntegrationTest {
                 airportCode = "JFK";
                 response = restTemplate.exchange(
                                 "/api/v1/airport/direct-connections?airportCode=" + airportCode + "&page=0&size=10",
-                                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponsePage<String>>() {
+                                HttpMethod.GET, null, new ParameterizedTypeReference<RestResponseSlice<String>>() {
                                 });
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
