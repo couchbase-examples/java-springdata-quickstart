@@ -49,7 +49,8 @@ class RouteIntegrationTest {
                 } catch (DocumentNotFoundException | DataRetrievalFailureException | ResourceAccessException e) {
                         log.warn("Document " + routeId + " not present prior to test");
                 } catch (Exception e) {
-                        log.error("Error deleting test data", e.getMessage());
+                        log.debug("Cleanup: Could not delete test route {}: {} (this is expected during test cleanup)", routeId, e.getMessage());
+                        // Continue with cleanup even if one deletion fails
                 }
         }
 

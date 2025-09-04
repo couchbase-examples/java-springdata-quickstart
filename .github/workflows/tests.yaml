@@ -31,14 +31,19 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java-version }}
-          distribution: "adopt"
+          distribution: "temurin"
           cache: "gradle"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-home-cache-cleanup: true
 
       - name: Run Gradle Tests
         id: run
         run: |
           chmod +x gradlew
-          ./gradlew clean test --info --stacktrace
+          ./gradlew clean test --info --stacktrace --configuration-cache
 
       - name: Report Status
         if: always()

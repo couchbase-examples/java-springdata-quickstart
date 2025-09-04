@@ -8,6 +8,7 @@ import org.couchbase.quickstart.springdata.services.AirportService;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -162,13 +163,13 @@ public class AirportController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @Parameter(name = "airportCode", description = "The airport code to list direct connections", required = true, example = "SFO")
-    public ResponseEntity<Page<String>> listDirectConnections(
+    public ResponseEntity<Slice<String>> listDirectConnections(
             @RequestParam(required = true) String airportCode,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
-            Page<Route> airports = airportService.getDirectConnections(airportCode, PageRequest.of(page, size));
-            Page<String> directConnections = airports.map(Route::getDestinationAirport);
+            Slice<Route> airports = airportService.getDirectConnections(airportCode, PageRequest.of(page, size));
+            Slice<String> directConnections = airports.map(Route::getDestinationAirport);
             return new ResponseEntity<>(directConnections, HttpStatus.OK);
 
         } catch (Exception e) {
