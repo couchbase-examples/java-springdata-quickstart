@@ -27,7 +27,7 @@ dependencies {
     implementation 'jakarta.servlet:jakarta.servlet-api'
     
     // Environment variable loading from .env file
-    implementation 'io.github.cdimascio:dotenv-java:3.0.2'
+    implementation 'io.github.cdimascio:dotenv-java:3.2.0'
 
 	// lombok
 	compileOnly 'org.projectlombok:lombok'
