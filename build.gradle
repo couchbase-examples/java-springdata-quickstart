@@ -44,5 +44,7 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
 }
 

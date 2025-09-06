@@ -32,7 +32,7 @@ class AirportIntegrationTest {
         @Value("${local.server.port}")
         private int port;
 
-        @Value("#{systemEnvironment['DB_CONN_STR'] ?: '${spring.couchbase.bootstrap-hosts:localhost}'}")
+        @Value("#{systemEnvironment['DB_CONN_STR'] ?: '${spring.couchbase.connection-string:localhost}'}")
         private String bootstrapHosts;
 
         @Autowired

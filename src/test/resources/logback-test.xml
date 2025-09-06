@@ -41,7 +41,7 @@
     <logger name="org.couchbase.quickstart.springdata" level="INFO"/>
     
     <!-- Show test-related logs for debugging when needed -->
-    <logger name="org.couchbase.quickstart.springdata.controllers" level="WARN"/>
+    <logger name="org.couchbase.quickstart.springdata.controllers" level="DEBUG"/>
     
     <!-- Suppress JVM warnings -->
     <logger name="jdk.internal" level="ERROR"/>
