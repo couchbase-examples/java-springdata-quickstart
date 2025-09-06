@@ -18,10 +18,12 @@ To run this prebuilt project, you will need:
 - [Couchbase Capella](https://www.couchbase.com/products/capella/) cluster with [travel-sample](https://docs.couchbase.com/java-sdk/current/ref/travel-app-data-model.html) bucket loaded.
   - To run this tutorial using a self-managed Couchbase cluster, please refer to the [appendix](#running-self-managed-couchbase-cluster).
 - [Java 17 or higher](https://www.oracle.com/in/java/technologies/downloads/#java17)
-  - Ensure that the Java version is compatible with the Couchbase SDK.
+  - **Java 17+ is required** for Gradle 9.0+ compatibility
+  - Ensure that the Java version is compatible with the Couchbase SDK
 - [Loading Travel Sample Bucket](https://docs.couchbase.com/cloud/clusters/data-service/import-data-documents.html#import-sample-data)
   - If `travel-sample` is not loaded in your Capella cluster, you can load it by following the instructions for your Capella Cluster
-- [Gradle 8.6 or higher](https://gradle.org/releases/)
+- [Gradle 9.0 or higher](https://gradle.org/releases/)
+  - The project uses Gradle wrapper, so manual installation is optional
 
 ## App Setup
 
@@ -38,7 +40,7 @@ git clone https://github.com/couchbase-examples/java-springdata-quickstart.git
 The dependencies for the application are specified in the `build.gradle` file in the source folder. Dependencies can be installed through `gradle` the default package manager for Java.
 
 ```
-gradle build -x test
+./gradlew build -x test
 ```
 
 Note: The `-x test` option is used to skip the tests. The tests require the application to be running.
@@ -54,30 +56,47 @@ Specifically, you need to do the following:
 - Create the [database credentials](https://docs.couchbase.com/cloud/clusters/manage-database-users.html) to access the travel-sample bucket (Read and Write) used in the application.
 - [Allow access](https://docs.couchbase.com/cloud/clusters/allow-ip-address.html) to the Cluster from the IP on which the application is running.
 
-All configuration for communication with the database is read from the environment variables. We have provided a convenience feature in this quickstart to read the environment variables from a local file, `application.properties` in the `src/main/resources` folder.
+All configuration for communication with the database is read from environment variables. This quickstart provides two convenient ways to set up your database connection:
 
-You can also set the environment variables directly in your environment such as:
+### Option 1: Environment Variables (Recommended for Production)
+
+Set the environment variables directly in your environment:
 
 ```sh
 export DB_CONN_STR=couchbases://<cluster-url>
-export DB_USERNAME=Administrator
-export DB_PASSWORD=password
+export DB_USERNAME=your-username
+export DB_PASSWORD=your-password
 ```
 
-The `application.properties` file should look like this:
+### Option 2: .env File (Recommended for Local Development)
+
+Create a `.env` file in the project root directory:
+
+```env
+# Copy from .env.example and update with your actual values
+DB_CONN_STR=couchbases://your-cluster-url.cloud.couchbase.com
+DB_USERNAME=your-username
+DB_PASSWORD=your-password
+```
+
+The `application.properties` file uses these environment variables with modern Spring Boot 3.5+ properties:
 
 ```properties
+# Server configuration
 server.forward-headers-strategy=framework
-spring.couchbase.bootstrap-hosts=DB_CONN_STR
-spring.couchbase.bucket.name=travel-sample
-spring.couchbase.bucket.user=DB_USERNAME
-spring.couchbase.bucket.password=DB_PASSWORD
-spring.couchbase.scope.name=inventory
+
+# Modern Couchbase configuration (Spring Boot 3.5+)
+spring.couchbase.connection-string=${DB_CONN_STR}
+spring.couchbase.username=${DB_USERNAME}
+spring.couchbase.password=${DB_PASSWORD}
+
+# Couchbase connection optimizations
+spring.couchbase.env.timeouts.query=30000ms
+spring.couchbase.env.timeouts.key-value=5000ms
+spring.couchbase.env.timeouts.connect=10000ms
 ```
 
-You can specify the connection string, username, and password using environment variables. The application will read these environment variables and use them to connect to the database.
-
-Additionally, you can specify the connection string, username, and password directly in the `application.properties` file.
+The application automatically loads environment variables from the `.env` file for local development convenience.
 
 > Note: The connection string expects the `couchbases://` or `couchbase://` part.
 
@@ -91,17 +110,17 @@ You do not need to make any changes to your configuration for this quickstart. H
 @EnableCouchbaseRepositories
 public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
 
-  @Value("#{systemEnvironment['DB_CONN_STR'] ?: '${spring.couchbase.bootstrap-hosts:localhost}'}")
+  @Value("#{systemEnvironment['DB_CONN_STR'] ?: '${spring.couchbase.connection-string:localhost}'}")
   private String host;
 
-  @Value("#{systemEnvironment['DB_USERNAME'] ?: '${spring.couchbase.bucket.user:Administrator}'}")
+  @Value("#{systemEnvironment['DB_USERNAME'] ?: '${spring.couchbase.username:Administrator}'}")
   private String username;
 
-  @Value("#{systemEnvironment['DB_PASSWORD'] ?: '${spring.couchbase.bucket.password:password}'}")
+  @Value("#{systemEnvironment['DB_PASSWORD'] ?: '${spring.couchbase.password:password}'}")
   private String password;
 
-  @Value("${spring.couchbase.bucket.name:travel-sample}")
-  private String bucketName;
+  // Since bucket auto-configuration is removed in modern Spring Boot, we hardcode the bucket name
+  private String bucketName = "travel-sample";
 
   @Override
   public String getConnectionString() {
@@ -159,7 +178,8 @@ public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
 
 > _from config/CouchbaseConfiguration.java_
 
-This default configuration assumes that you have a locally running Couchbae server and use a standard administrative login and password for demonstration purposes.
+This configuration uses modern Spring Boot 3.5+ properties and automatically loads environment variables from `.env` files for local development. The configuration assumes you have either a locally running Couchbase server or a Couchbase Capella cluster.
+
 Applications deployed to production or staging environments should use less privileged credentials created using [Role-Based Access Control](https://docs.couchbase.com/go-sdk/current/concept-docs/rbac.html).
 Please refer to [Managing Connections using the Java SDK with Couchbase Server](https://docs.couchbase.com/java-sdk/current/howtos/managing-connections.html) for more information on Capella and local cluster connections.
 
@@ -170,13 +190,13 @@ Please refer to [Managing Connections using the Java SDK with Couchbase Server](
 At this point, we have installed the dependencies, loaded the travel-sample data and configured the application with the credentials. The application is now ready and you can run it.
 
 ```sh
-gradle bootRun
+./gradlew bootRun
 ```
 
-Note: If you're using Windows, you can run the application using the `gradle.bat` executable.
+Note: If you're using Windows, you can run the application using the Gradle wrapper batch file.
 
 ```sh
-./gradew.bat bootRun
+./gradlew.bat bootRun
 ```
 
 ### Using Docker
@@ -190,10 +210,14 @@ docker build -t java-springdata-quickstart .
 Run the Docker image
 
 ```sh
-docker run -d --name springdata-container -p 8080:8080 java-springdata-quickstart
+docker run -d --name springdata-container -p 8080:8080 \
+  -e DB_CONN_STR=couchbases://your-cluster-url.cloud.couchbase.com \
+  -e DB_USERNAME=your-username \
+  -e DB_PASSWORD=your-password \
+  java-springdata-quickstart
 ```
 
-Note: The `application.properties` file has the connection information to connect to your Capella cluster. These will be part of the environment variables in the Docker container.
+Note: Pass your database credentials as environment variables to the Docker container. The `.env` file is used only for local development and won't be available in Docker containers.
 
 ### Verifying the Application
 
@@ -210,8 +234,10 @@ The application will run on port 8080 of your local machine (http://localhost:80
 To run the integration tests, use the following commands:
 
 ```sh
-gradle test
+./gradlew test
 ```
+
+Note: The tests include comprehensive integration tests that connect to your Couchbase cluster and validate all CRUD operations with clean logging output.
 
 ## Appendix
 
