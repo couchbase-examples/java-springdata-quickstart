@@ -7,7 +7,6 @@ import static org.couchbase.quickstart.springdata.config.SpringDocConstants.VERS
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
@@ -21,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
  **/
 
 @Slf4j
-@SpringBootApplication(exclude = SecurityAutoConfiguration.class, proxyBeanMethods = false)
+@SpringBootApplication(proxyBeanMethods = false)
 @OpenAPIDefinition(info = @Info(title = TITLE, version = VERSION, description = DESCRIPTION))
 public class Application implements CommandLineRunner {
 
