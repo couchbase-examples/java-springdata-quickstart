@@ -79,13 +79,13 @@ DB_USERNAME=your-username
 DB_PASSWORD=your-password
 ```
 
-The `application.properties` file uses these environment variables with modern Spring Boot 3.5+ properties:
+The `application.properties` file uses these environment variables with modern Spring Boot 4.0+ properties:
 
 ```properties
 # Server configuration
 server.forward-headers-strategy=framework
 
-# Modern Couchbase configuration (Spring Boot 3.5+)
+# Modern Couchbase configuration (Spring Boot 4.0+)
 spring.couchbase.connection-string=${DB_CONN_STR}
 spring.couchbase.username=${DB_USERNAME}
 spring.couchbase.password=${DB_PASSWORD}
@@ -178,7 +178,7 @@ public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
 
 > _from config/CouchbaseConfiguration.java_
 
-This configuration uses modern Spring Boot 3.5+ properties and automatically loads environment variables from `.env` files for local development. The configuration assumes you have either a locally running Couchbase server or a Couchbase Capella cluster.
+This configuration uses modern Spring Boot 4.0+ properties and automatically loads environment variables from `.env` files for local development. The configuration assumes you have either a locally running Couchbase server or a Couchbase Capella cluster.
 
 Applications deployed to production or staging environments should use less privileged credentials created using [Role-Based Access Control](https://docs.couchbase.com/go-sdk/current/concept-docs/rbac.html).
 Please refer to [Managing Connections using the Java SDK with Couchbase Server](https://docs.couchbase.com/java-sdk/current/howtos/managing-connections.html) for more information on Capella and local cluster connections.
