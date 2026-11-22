@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.couchbase.quickstart.springdata.models.Airport;
 import org.couchbase.quickstart.springdata.models.Route;
 import org.couchbase.quickstart.springdata.services.AirportService;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -21,19 +20,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.couchbase.client.core.error.DocumentExistsException;
-import com.couchbase.client.core.error.DocumentNotFoundException;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/airport")
-@Slf4j
 public class AirportController {
 
     private final AirportService airportService;
@@ -42,27 +36,14 @@ public class AirportController {
         this.airportService = airportService;
     }
 
-    // All Errors
-    private static final String INTERNAL_SERVER_ERROR = "Internal server error";
-    private static final String DOCUMENT_NOT_FOUND = "Document not found";
-    private static final String DOCUMENT_ALREADY_EXISTS = "Document already exists";
-
     @GetMapping("/{id}")
     @Operation(summary = "Get an airport by ID", description = "Get Airport by specified ID.\n\nThis provides an example of using Key Value operations in Couchbase to retrieve a document with a specified ID. \n\n Code: [`controllers/AirportController.java`](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/org/couchbase/quickstart/springdata/controllers/AirportController.java) \n File: `AirportController.java` \n Method: `getAirport`", tags = {
             "Airport" })
     @Parameter(name = "id", description = "The ID of the airport to retrieve", required = true, example = "airport_1254")
     public ResponseEntity<Airport> getAirport(@PathVariable String id) {
-        try {
-            Optional<Airport> airport = airportService.getAirportById(id);
-            return airport.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-        } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
-            log.error(DOCUMENT_NOT_FOUND, e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            log.error(INTERNAL_SERVER_ERROR, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Optional<Airport> airport = airportService.getAirportById(id);
+        return airport.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping("/{id}")
@@ -75,17 +56,8 @@ public class AirportController {
     })
     @Parameter(name = "id", description = "The ID of the airport to create", required = true, example = "airport_1254")
     public ResponseEntity<Airport> createAirport(@PathVariable String id, @Valid @RequestBody Airport airport) {
-        try {
-            Airport newAirport = airportService.createAirport(airport);
-            return new ResponseEntity<>(newAirport, HttpStatus.CREATED);
-        } catch (DocumentExistsException e) {
-            log.error(DOCUMENT_ALREADY_EXISTS, e);
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            log.error(INTERNAL_SERVER_ERROR, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
+        Airport newAirport = airportService.createAirport(airport);
+        return new ResponseEntity<>(newAirport, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -98,21 +70,8 @@ public class AirportController {
     })
     @Parameter(name = "id", description = "The ID of the airport to update", required = true, example = "airport_1254")
     public ResponseEntity<Airport> updateAirport(@PathVariable String id, @Valid @RequestBody Airport airport) {
-        try {
-            Airport updatedAirport = airportService.updateAirport(id, airport);
-            if (updatedAirport != null) {
-                return new ResponseEntity<>(updatedAirport, HttpStatus.OK);
-            } else {
-                log.error(DOCUMENT_NOT_FOUND);
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
-            log.error(DOCUMENT_NOT_FOUND, e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            log.error(INTERNAL_SERVER_ERROR, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Airport updatedAirport = airportService.updateAirport(id, airport);
+        return new ResponseEntity<>(updatedAirport, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -125,16 +84,8 @@ public class AirportController {
     })
     @Parameter(name = "id", description = "The ID of the airport to delete", required = true, example = "airport_1254")
     public ResponseEntity<Void> deleteAirport(@PathVariable String id) {
-        try {
-            airportService.deleteAirport(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (DocumentNotFoundException e) {
-            log.error(DOCUMENT_NOT_FOUND, e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            log.error(INTERNAL_SERVER_ERROR, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        airportService.deleteAirport(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/list")
@@ -146,13 +97,8 @@ public class AirportController {
     })
     public ResponseEntity<Page<Airport>> listAirports(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        try {
-            Page<Airport> airports = airportService.getAllAirports(PageRequest.of(page, size));
-            return new ResponseEntity<>(airports, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error(INTERNAL_SERVER_ERROR, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Page<Airport> airports = airportService.getAllAirports(PageRequest.of(page, size));
+        return new ResponseEntity<>(airports, HttpStatus.OK);
     }
 
     @GetMapping("/direct-connections")
@@ -167,14 +113,8 @@ public class AirportController {
             @RequestParam(required = true) String airportCode,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        try {
-            Slice<Route> airports = airportService.getDirectConnections(airportCode, PageRequest.of(page, size));
-            Slice<String> directConnections = airports.map(Route::getDestinationAirport);
-            return new ResponseEntity<>(directConnections, HttpStatus.OK);
-
-        } catch (Exception e) {
-            log.error(INTERNAL_SERVER_ERROR, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Slice<Route> airports = airportService.getDirectConnections(airportCode, PageRequest.of(page, size));
+        Slice<String> directConnections = airports.map(Route::getDestinationAirport);
+        return new ResponseEntity<>(directConnections, HttpStatus.OK);
     }
 }

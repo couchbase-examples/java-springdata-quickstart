@@ -55,6 +55,7 @@ class AirlineIntegrationTest {
         }
 
         private void deleteTestAirlineData(String baseUri) {
+                deleteAirline(baseUri, "airline_get");
                 deleteAirline(baseUri, "airline_create");
                 deleteAirline(baseUri, "airline_update");
                 deleteAirline(baseUri, "airline_delete");
@@ -84,21 +85,24 @@ class AirlineIntegrationTest {
 
         @Test
         void testGetAirline() {
+                // Seed our own document rather than reading travel-sample airline_10:
+                // the shared CI cluster's sample data is mutated by other tutorials.
+                Airline expectedAirline = Airline.builder()
+                                .id("airline_get")
+                                .type("airline")
+                                .name("Test Get Airline")
+                                .iata("TG")
+                                .icao("TGA")
+                                .callsign("TEST-GET")
+                                .country("United States")
+                                .build();
+                airlineService.createAirline(expectedAirline);
+
                 ResponseEntity<Airline> response = restTemplate
-                                .getForEntity("/api/v1/airline/airline_10", Airline.class);
+                                .getForEntity("/api/v1/airline/airline_get", Airline.class);
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
                 Airline airline = response.getBody();
                 assert airline != null;
-
-                Airline expectedAirline = Airline.builder()
-                                .id("airline_10")
-                                .type("airline")
-                                .name("40-Mile Air")
-                                .iata("Q5")
-                                .icao("MLA")
-                                .callsign("MILE-AIR")
-                                .country("United States")
-                                .build();
                 assertThat(airline).isEqualTo(expectedAirline);
         }
 
