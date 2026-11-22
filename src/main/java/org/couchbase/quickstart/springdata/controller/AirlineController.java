@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.couchbase.quickstart.springdata.models.Airline;
 import org.couchbase.quickstart.springdata.services.AirlineService;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -19,17 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.couchbase.client.core.error.DocumentExistsException;
-import com.couchbase.client.core.error.DocumentNotFoundException;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/airline")
 public class AirlineController {
@@ -40,11 +34,6 @@ public class AirlineController {
         this.airlineService = airlineService;
     }
 
-    // All Errors
-    private static final String INTERNAL_SERVER_ERROR = "Internal server error";
-    private static final String DOCUMENT_NOT_FOUND = "Document not found";
-    private static final String DOCUMENT_ALREADY_EXISTS = "Document already exists";
-
     @GetMapping("/{id}")
     @Operation(summary = "Get an airline by ID", description = "Get Airline by specified ID.\n\nThis provides an example of using Key Value operations in Couchbase to retrieve a document with a specified ID. \n\n Code: [`controllers/AirlineController.java`](https://github.com/couchbase-examples/java-springdata-quickstart/blob/main/src/main/java/org/couchbase/quickstart/springdata/controllers/AirlineController.java) \n File: `AirlineController.java` \n Method: `getAirline`", tags = {
             "Airline" })
@@ -54,17 +43,9 @@ public class AirlineController {
             @ApiResponse(responseCode = "500", description = "Internal server error") })
     @Parameter(name = "id", description = "Airline ID", required = true, example = "airline_10")
     public ResponseEntity<Airline> getAirline(@PathVariable String id) {
-        try {
-            Optional<Airline> airline = airlineService.getAirlineById(id);
-            return airline.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-        } catch (DocumentNotFoundException e) {
-            log.error(DOCUMENT_NOT_FOUND, e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            log.error(INTERNAL_SERVER_ERROR, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Optional<Airline> airline = airlineService.getAirlineById(id);
+        return airline.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping("/{id}")
@@ -76,16 +57,8 @@ public class AirlineController {
             @ApiResponse(responseCode = "500", description = "Internal server error") })
     @Parameter(name = "id", description = "Airline ID", required = true, example = "airline_10")
     public ResponseEntity<Airline> createAirline(@Valid @RequestBody Airline airline) {
-        try {
-            Airline newAirline = airlineService.createAirline(airline);
-            return new ResponseEntity<>(newAirline, HttpStatus.CREATED);
-        } catch (DocumentExistsException e) {
-            log.error(DOCUMENT_ALREADY_EXISTS, e);
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            log.error(INTERNAL_SERVER_ERROR, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Airline newAirline = airlineService.createAirline(airline);
+        return new ResponseEntity<>(newAirline, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -97,20 +70,8 @@ public class AirlineController {
             @ApiResponse(responseCode = "500", description = "Internal server error") })
     @Parameter(name = "id", description = "Airline ID", required = true, example = "airline_10")
     public ResponseEntity<Airline> updateAirline(@PathVariable String id, @Valid @RequestBody Airline airline) {
-        try {
-            Airline updatedAirline = airlineService.updateAirline(id, airline);
-            if (updatedAirline != null) {
-                return new ResponseEntity<>(updatedAirline, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
-            log.error(DOCUMENT_NOT_FOUND, e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            log.error(INTERNAL_SERVER_ERROR, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Airline updatedAirline = airlineService.updateAirline(id, airline);
+        return new ResponseEntity<>(updatedAirline, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -122,16 +83,8 @@ public class AirlineController {
             @ApiResponse(responseCode = "500", description = "Internal server error") })
     @Parameter(name = "id", description = "Airline ID", required = true, example = "airline_10")
     public ResponseEntity<Void> deleteAirline(@PathVariable String id) {
-        try {
-            airlineService.deleteAirline(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (DocumentNotFoundException | DataRetrievalFailureException e) {
-            log.error(DOCUMENT_NOT_FOUND, e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            log.error(INTERNAL_SERVER_ERROR, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        airlineService.deleteAirline(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/list")
@@ -145,17 +98,12 @@ public class AirlineController {
             @RequestParam(required = false) String country,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        try {
-            if (country == null || country.isEmpty()) {
-                Page<Airline> airlines = airlineService.getAllAirlines(PageRequest.of(page, size));
-                return new ResponseEntity<>(airlines, HttpStatus.OK);
-            } else {
-                Page<Airline> airlines = airlineService.findByCountry(country, PageRequest.of(page, size));
-                return new ResponseEntity<>(airlines, HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            log.error(INTERNAL_SERVER_ERROR, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        if (country == null || country.isEmpty()) {
+            Page<Airline> airlines = airlineService.getAllAirlines(PageRequest.of(page, size));
+            return new ResponseEntity<>(airlines, HttpStatus.OK);
+        } else {
+            Page<Airline> airlines = airlineService.findByCountry(country, PageRequest.of(page, size));
+            return new ResponseEntity<>(airlines, HttpStatus.OK);
         }
     }
 
@@ -170,14 +118,9 @@ public class AirlineController {
             @RequestParam(required = false) String destinationAirport,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        try {
-            Page<Airline> airlines = airlineService.findByDestinationAirport(destinationAirport,
-                    PageRequest.of(page, size));
+        Page<Airline> airlines = airlineService.findByDestinationAirport(destinationAirport,
+                PageRequest.of(page, size));
 
-            return new ResponseEntity<>(airlines, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error(INTERNAL_SERVER_ERROR, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(airlines, HttpStatus.OK);
     }
 }
